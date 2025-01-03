@@ -1,22 +1,27 @@
-NAME=gl
+NAME=build/gl
 FLAGS= -g -Wall -Wextra -Werror -std=c++17 -Wshadow -Wno-shadow
-LIBS= glfw-3.4/build/src/libglfw3.a -lm -ldl -lpthread -lX11 -lGL -lXrandr -lXi
+GLAD=external/glad/src/glad.c
+GLADO=build/glad.o
+GLFWLIB=external/glfw-3.4/build/src/libglfw3.a
+LIBS=${GLFWLIB} -lm -ldl -lpthread -lX11 -lGL -lXrandr -lXi
 
-SRC= gl.cpp Shader.cpp
+GALLIUM=GALLIUM_HUD_PERIOD=0.05 GALLIUM_HUD=".dfps"
+
+SRC=src/gl.cpp src/Shader.cpp src/Time.cpp
 
 all: ${NAME}
 
 go: all
-	GALLIUM_HUD_PERIOD=0.05 GALLIUM_HUD=".dfps" ./${NAME}
+	${GALLIUM} ./${NAME}
 
-glad.o: glad/src/glad.c
-	gcc -Wall -Iglad/include -c glad/src/glad.c -o glad.o
+${GLADO}: ${GLAD}
+	gcc -Wall -Iexternal/glad/include -c ${GLAD} -o ${GLADO}
 
-${NAME}: ${SRC} glad.o
-	c++ ${FLAGS} -o ${NAME} ${SRC} glad.o ${LIBS}
+${NAME}: ${SRC} ${GLADO}
+	c++ ${FLAGS} -o ${NAME} ${SRC} ${GLADO} ${LIBS}
 
 clean:
-	rm -f ${NAME} glad.o
+	rm -f ${NAME} ${GLADO}
 
 fclean: clean
 
