@@ -1,4 +1,4 @@
-#include "../include/Time.hpp"
+#include "Time.hpp"
 
 float Time::deltaTime = 0.0f;
 float Time::currentTime = 0.0f;

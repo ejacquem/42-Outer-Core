@@ -1,7 +1,7 @@
 #ifndef TIME_HPP
 #define TIME_HPP
 
-#include "../external/glfw-3.4/include/GLFW/glfw3.h"
+#include "glfw-3.4/include/GLFW/glfw3.h"
 
 class Time
 {
