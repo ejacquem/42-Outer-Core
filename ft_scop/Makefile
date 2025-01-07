@@ -11,7 +11,8 @@ GALLIUM = GALLIUM_HUD_PERIOD=0.05 GALLIUM_HUD=".dfps"
 SRC		= src/gl.cpp src/render/Shader.cpp src/Time.cpp\
 			src/render/VBO.cpp\
 			src/render/VAO.cpp\
-			src/render/EBO.cpp
+			src/render/EBO.cpp\
+			src/LineDrawer.cpp
 
 all: ${NAME}
 

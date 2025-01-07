@@ -8,6 +8,7 @@
 #include "glm/gtc/type_ptr.hpp"
 
 #include "Shader.hpp"
+#include "LineDrawer.hpp"
 #include "VAO.hpp"
 #include "VBO.hpp"
 #include "EBO.hpp"
@@ -41,7 +42,7 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 }
 
 float mixValue = 0;
-glm::vec3 cameraPos   = glm::vec3(0.0f, 0.0f,  3.0f);
+glm::vec3 cameraPos   = glm::vec3(1.0f, 1.0f,  3.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraUp    = glm::vec3(0.0f, 1.0f,  0.0f);
 
@@ -178,6 +179,7 @@ int main()
     Shader textshader = Shader("shaders/texture.vert", "shaders/texture.frag");
     Shader transformshader = Shader("shaders/transform.vert", "shaders/texture.frag");
     Shader perspectiveshader = Shader("shaders/perspective.vert", "shaders/texture.frag");
+    Shader lineshader = Shader("shaders/3d_line.vert", "shaders/3d_line.frag");
 
     stbi_set_flip_vertically_on_load(true);
 
@@ -251,6 +253,46 @@ int main()
         glm::vec3(-1.3f,  1.0f, -1.5f)  
     };
 
+    float lineVertices[] = {
+        //positions         //colors
+        -5.0f,  0.0f,  0.0f, 1.0f, 0.0f, 0.0f,
+         5.0f,  0.0f,  0.0f, 1.0f, 0.0f, 0.0f,
+         0.0f, -5.0f,  0.0f, 0.0f, 1.0f, 0.0f,
+         0.0f,  5.0f,  0.0f, 0.0f, 1.0f, 0.0f,
+         0.0f,  0.0f, -5.0f, 0.0f, 0.0f, 1.0f,
+         0.0f,  0.0f,  5.0f, 0.0f, 0.0f, 1.0f
+        };
+
+    // VAO vao_line = VAO();
+    // VBO vbo_line = VBO(lineVertices, sizeof(lineVertices));
+
+    GLuint vbo_line, vao_line;
+
+	glGenVertexArrays(1, &vao_line);
+	glBindVertexArray(vao_line);
+
+	glGenBuffers(1, &vbo_line);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo_line);
+
+	glBufferData(GL_ARRAY_BUFFER, sizeof(lineVertices), lineVertices, GL_STATIC_DRAW);
+
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(lineVertices), lineVertices);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+
+
+    VAO::unbind();
+    VBO::unbind();
+
+    LineDrawer linedrawer = LineDrawer(lineshader);
+    // linedrawer.add_line(-5.0f, 0.0f, 0.0f, 5.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f);
+    // linedrawer.add_line(0.0f, -5.0f, 0.0f, 0.0f, 5.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+    // linedrawer.add_line(0.0f, 0.0f, -5.0f, 0.0f, 0.0f, 5.0f, 0.0f, 0.0f, 1.0f);
+
     while (!glfwWindowShouldClose(window))
     {
         time.update();
@@ -273,20 +315,13 @@ int main()
         model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
         // view  = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
         
-        // //camera rotate around origin
-        // const float radius = 10.0f;
-        // float camX = sin(glfwGetTime()) * radius;
-        // float camZ = cos(glfwGetTime()) * radius;
-        // // glm::mat4 view;
-        // view = glm::lookAt(glm::vec3(camX, 0.0, camZ), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
-
         // move camera with input
         view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 
-        projection = glm::perspective(glm::radians(fov), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);
+        projection = glm::perspective(glm::radians(fov), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.01f, 100.0f);
         model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));  
         // note: currently we set the projection matrix each frame, but since the projection matrix rarely changes it's often best practice to set it outside the main loop only once.
-        perspectiveshader.setMat4("model", model);
+        perspectiveshader.setMat4("model+", model);
         perspectiveshader.setMat4("view", view);
         perspectiveshader.setMat4("projection", projection);
 
@@ -294,22 +329,6 @@ int main()
         perspectiveshader.setInt("texture2", 1);
         perspectiveshader.setFloat("mixValue", mixValue);
 
-        {
-            // transformshader.setInt("texture1", 0);
-            // transformshader.setInt("texture2", 1);
-            // // transformshader.setFloat("transform", trans);
-            // glm::mat4 trans = glm::mat4(1.0f);
-            // // trans = glm::translate(trans, glm::vec3(0.5f, -0.5f, 0.0f));
-            // trans = glm::rotate(trans, Time::currentTime, glm::vec3(0.0f, 0.0f, 1.0f));
-            // unsigned int transformLoc = glGetUniformLocation(transformshader.ID, "transform");
-            // glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
-            // // textshader.setFloat("xOffset", sin(Time::currentTime*8)/16);
-            // // textshader.setFloat("xOffset2", cos(Time::currentTime*8)/16);
-            // // textshader.setFloat("yOffset2", sin(Time::currentTime*8)/16);
-            // // textshader.setFloat("yOffset", cos(Time::currentTime*8)/16);
-            // transformshader.setFloat("mixValue", mixValue);
-        }
-        
         vao.bind();
 
         for(unsigned int i = 0; i < 10; i++)
@@ -325,6 +344,20 @@ int main()
             // glDrawArrays(GL_TRIANGLES, 0, 36);
         }
 
+        VAO::unbind();
+
+        lineshader.use();
+        
+        glm::mat4 model_line = glm::mat4(1.0f);
+        lineshader.setMat4("model", model_line);
+        lineshader.setMat4("view", view);
+        lineshader.setMat4("projection", projection);
+
+        // linedrawer.draw();
+
+        glBindVertexArray(vao_line);
+
+        glDrawArrays(GL_LINES, 0, 6);
 
         // blobshader.use();
         // blobshader.setFloat("xOffset", sin(Time::currentTime*8)/16);
