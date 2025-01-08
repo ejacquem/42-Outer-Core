@@ -1,5 +1,5 @@
 NAME	= build/gl
-FLAGS	= -g -Wall -Wextra -Werror -std=c++17 -Wshadow -Wno-shadow
+FLAGS	= -g -Wall -Wextra -std=c++17 -Wshadow -Wno-shadow
 GLAD	= external/glad/src/glad.c
 GLADO	= build/glad.o
 GLFWLIB	= external/glfw-3.4/build/src/libglfw3.a

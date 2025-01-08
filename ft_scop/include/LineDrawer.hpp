@@ -3,14 +3,9 @@
 
 #include <vector>
 #include "Shader.hpp"
-#include "VAO.hpp"
-#include "VBO.hpp"
+#include "scop.hpp"
 
-struct Vertex
-{
-    float x, y, z;
-    float r, g, b;
-};
+#define GRID_COLOR 0.9, 0.9, 0.9
 
 //this class will contain lines and draw them
 // - add_line: add a line to the list of lines
@@ -25,11 +20,13 @@ class LineDrawer
 {
 private:
     //vector of lines
-    std::vector<Vertex> lines_vertex;
+    std::vector<VertexColor> lines_vertex;
+    int vertex_size;
     Shader shader;
     GLuint vao, vbo;
     // VAO vao;
     // VBO vbo;
+    void computeBuffer();
 
 public:
     LineDrawer(Shader shader);
@@ -37,6 +34,10 @@ public:
 
     //add a line to the list of lines
     void add_line(float x1, float y1, float z1, float x2, float y2, float z2, float r, float g, float b);
+    void add_line(Point3D a, Point3D b, int color);
+    void add_horizontal_line(Point3D start, float len, int color);
+    void add_vertical_line(Point3D start, float len, int color);
+    void add_depth_line(Point3D start, float len, int color);
 
     // void add_line(const Line3D line);
 
@@ -53,13 +54,13 @@ public:
     void add_axes();
 
     //add a grid of n lines in the yz plane
-    void add_xgrid(int n);
+    void add_xgrid(int n, int grid_size);
 
     //add a grid of n lines in the xz plane
-    void add_ygrid(int n);
+    void add_ygrid(int n, int grid_size);
 
     //add a grid of n lines in the xy plane
-    void add_zgrid(int n);
+    void add_zgrid(int n, int grid_size);
 };
 
 #endif
