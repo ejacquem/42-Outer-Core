@@ -5,7 +5,7 @@
 #include "Shader.hpp"
 #include "scop.hpp"
 
-#define GRID_COLOR 0.9, 0.9, 0.9
+#define GRID_COLOR 0xaaaaaa
 
 //this class will contain lines and draw them
 // - add_line: add a line to the list of lines

@@ -6,6 +6,11 @@ struct Vertex
     float x, y, z;
 };
 
+struct Indice
+{
+    int x, y, z;
+};
+
 struct VertexColor
 {
     float x, y, z;

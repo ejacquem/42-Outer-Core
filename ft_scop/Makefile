@@ -12,7 +12,9 @@ SRC		= src/gl.cpp src/render/Shader.cpp src/Time.cpp\
 			src/render/VBO.cpp\
 			src/render/VAO.cpp\
 			src/render/EBO.cpp\
-			src/LineDrawer.cpp
+			src/LineDrawer.cpp\
+			src/Object.cpp\
+			src/ObjectLoader.cpp
 
 all: ${NAME}
 

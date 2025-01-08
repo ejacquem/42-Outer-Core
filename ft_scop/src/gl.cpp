@@ -8,6 +8,8 @@
 #include "glm/gtc/type_ptr.hpp"
 
 #include "Shader.hpp"
+#include "Object.hpp"
+#include "ObjectLoader.hpp"
 #include "LineDrawer.hpp"
 #include "VAO.hpp"
 #include "VBO.hpp"
@@ -19,6 +21,8 @@
 
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600
+
+#define CAMERA_SPEED 5
 
 using std::string;
 
@@ -64,7 +68,7 @@ void processInput(GLFWwindow *window)
         if (mixValue <= 0.0f)
             mixValue = 0.0f;
     }
-    const float cameraSpeed = 5 * Time::deltaTime; // adjust accordingly
+    const float cameraSpeed = CAMERA_SPEED * Time::deltaTime; // adjust accordingly
     glm::vec3 frontvec(cameraFront.x, 0, cameraFront.z);
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         cameraPos += cameraSpeed * glm::normalize(frontvec);
@@ -141,7 +145,7 @@ GLFWwindow *createWindow()
 
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     glfwSetCursorPosCallback(window, mouse_callback);
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    // glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     return window;
 }
 
@@ -180,6 +184,7 @@ int main()
     Shader transformshader = Shader("shaders/transform.vert", "shaders/texture.frag");
     Shader perspectiveshader = Shader("shaders/perspective.vert", "shaders/texture.frag");
     Shader lineshader = Shader("shaders/3d_line.vert", "shaders/3d_line.frag");
+    Shader defaultshader = Shader("shaders/default.vert", "shaders/default.frag");
 
     stbi_set_flip_vertically_on_load(true);
 
@@ -255,9 +260,18 @@ int main()
 
     LineDrawer linedrawer = LineDrawer(lineshader);
     linedrawer.add_axes();
-    linedrawer.add_xgrid(5, 1);
+    // linedrawer.add_xgrid(5, 1);
     linedrawer.add_ygrid(5, 1);
-    linedrawer.add_zgrid(5, 1);
+    // linedrawer.add_zgrid(5, 1);
+
+    // std::vector<Vertex> objvertices = {{0, 0, 0},{1, 0, 0},{0, 1, 0}};
+    // std::vector<Indice> objindices = {{0, 1, 2}};
+
+    // Object obj(objvertices, objindices);
+
+    ObjectLoader objLoader;
+
+    Object cube = objLoader.parse("resources/teapot.obj");
 
     while (!glfwWindowShouldClose(window))
     {
@@ -272,30 +286,30 @@ int main()
         glBindTexture(GL_TEXTURE_2D, texture2);
 
 
-        perspectiveshader.use();
+        // perspectiveshader.use();
 
         // create transformations
         glm::mat4 model         = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
         glm::mat4 view          = glm::mat4(1.0f);
         glm::mat4 projection    = glm::mat4(1.0f);
-        model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+        // model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
         // view  = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
         
         // move camera with input
         view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 
         projection = glm::perspective(glm::radians(fov), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.01f, 100.0f);
-        model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));  
+        // model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));  
         // note: currently we set the projection matrix each frame, but since the projection matrix rarely changes it's often best practice to set it outside the main loop only once.
-        perspectiveshader.setMat4("model+", model);
-        perspectiveshader.setMat4("view", view);
-        perspectiveshader.setMat4("projection", projection);
+        // perspectiveshader.setMat4("model", model);
+        // perspectiveshader.setMat4("view", view);
+        // perspectiveshader.setMat4("projection", projection);
 
-        perspectiveshader.setInt("texture1", 0);
-        perspectiveshader.setInt("texture2", 1);
-        perspectiveshader.setFloat("mixValue", mixValue);
+        // perspectiveshader.setInt("texture1", 0);
+        // perspectiveshader.setInt("texture2", 1);
+        // perspectiveshader.setFloat("mixValue", mixValue);
 
-        vao.bind();
+        // vao.bind();
 
         // for(unsigned int i = 0; i < 10; i++)
         // {
@@ -310,10 +324,17 @@ int main()
         //     // glDrawArrays(GL_TRIANGLES, 0, 36);
         // }
 
-        VAO::unbind();
+        // VAO::unbind();
+
+        defaultshader.use();
+        defaultshader.setMat4("model", model);
+        defaultshader.setMat4("view", view);
+        defaultshader.setMat4("projection", projection);
+
+        // obj.draw();
+        cube.draw();
 
         lineshader.use();
-
         lineshader.setMat4("view", view);
         lineshader.setMat4("projection", projection);
 
@@ -335,7 +356,6 @@ int main()
 
         glfwSwapBuffers(window);
         glfwPollEvents();
-
     }
 
     glfwTerminate();

@@ -156,8 +156,8 @@ void LineDrawer::add_xgrid(int n, int grid_size)
     {
         startz.y = i * grid_size;
         starty.z = i * grid_size;
-        this->add_vertical_line(starty, len * 2, 0);
-        this->add_depth_line(startz, len * 2, 0);
+        this->add_vertical_line(starty, len * 2, GRID_COLOR);
+        this->add_depth_line(startz, len * 2, GRID_COLOR);
     }
 }
 
@@ -172,8 +172,8 @@ void LineDrawer::add_ygrid(int n, int grid_size)
     {
         startz.x = i * grid_size;
         startx.z = i * grid_size;
-        this->add_horizontal_line(startx, len * 2, 0);
-        this->add_depth_line(startz, len * 2, 0);
+        this->add_horizontal_line(startx, len * 2, GRID_COLOR);
+        this->add_depth_line(startz, len * 2, GRID_COLOR);
     }
 }
 
@@ -188,7 +188,7 @@ void LineDrawer::add_zgrid(int n, int grid_size)
     {
         startx.y = i * grid_size;
         starty.x = i * grid_size;
-        this->add_horizontal_line(startx, len * 2, 0);
-        this->add_vertical_line(starty, len * 2, 0);
+        this->add_horizontal_line(startx, len * 2, GRID_COLOR);
+        this->add_vertical_line(starty, len * 2, GRID_COLOR);
     }
 }
