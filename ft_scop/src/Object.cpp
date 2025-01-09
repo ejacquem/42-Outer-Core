@@ -18,9 +18,6 @@ indices(indices)
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->indices.size() * sizeof(Indice), this->indices.data(), GL_STATIC_DRAW);
 
-    std::cout << "this->indices.size() : " << this->indices.size() << std::endl;
-    std::cout << "sizeof(this->indices): " << sizeof(this->indices) << std::endl;
-
     // Set up position attributes (x, y, z)
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);

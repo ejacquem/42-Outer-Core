@@ -13,3 +13,18 @@ void Time::update()
     currentTime = glfwGetTime();
     deltaTime = currentTime - lastTime;
 }
+
+
+Timer::Timer(){}
+Timer::~Timer(){}
+
+void Timer::start(const std::string& timerName)
+{
+    name = timerName;
+    startTime = glfwGetTime();
+}
+
+void Timer::stop()
+{
+    std::cout << "Timer " << name << ": " << glfwGetTime() - startTime << " seconds" << std::endl;
+}

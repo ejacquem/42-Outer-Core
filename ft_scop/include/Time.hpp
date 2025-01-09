@@ -2,6 +2,8 @@
 #define TIME_HPP
 
 #include "glfw-3.4/include/GLFW/glfw3.h"
+#include <string>
+#include <iostream>
 
 class Time
 {
@@ -18,4 +20,19 @@ public:
     void update();
 };
 
+class Timer
+{
+private:
+    float startTime;
+    std::string name;
+
+public:
+
+    Timer();
+    ~Timer();
+
+    void start(const std::string& timerName);
+    void stop();
+
+};
 #endif

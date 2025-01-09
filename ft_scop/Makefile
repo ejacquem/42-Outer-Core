@@ -9,17 +9,23 @@ INCLUDE	= -I./include -I./include/render -I./external
 GALLIUM = GALLIUM_HUD_PERIOD=0.05 GALLIUM_HUD=".dfps"
 
 SRC		= src/gl.cpp src/render/Shader.cpp src/Time.cpp\
-			src/render/VBO.cpp\
-			src/render/VAO.cpp\
-			src/render/EBO.cpp\
 			src/LineDrawer.cpp\
 			src/Object.cpp\
 			src/ObjectLoader.cpp
 
-all: ${NAME}
+FILE?=teapot
 
-go: all
-	${GALLIUM} ./${NAME}
+VALGRIND := valgrind --leak-check=full --suppressions=valgrind.supp
+VALGRINDGEN := valgrind --leak-check=full --gen-suppressions=all
+
+all: ${NAME}
+	@echo "use make run FILE=filename"
+
+run: all
+	${GALLIUM} ./${NAME} resources/${FILE}.obj
+
+vrun: all
+	${GALLIUM} ${VALGRIND} ./${NAME} resources/${FILE}.obj
 
 ${GLADO}: ${GLAD}
 	gcc -Wall -Iexternal/glad/include -c ${GLAD} -o ${GLADO}

@@ -4,6 +4,12 @@
         "cmath": "cpp",
         "iosfwd": "cpp",
         "fstream": "cpp",
-        "stdexcept": "cpp"
+        "stdexcept": "cpp",
+        "*.tcc": "cpp",
+        "string": "cpp",
+        "sstream": "cpp",
+        "ostream": "cpp",
+        "vector": "cpp",
+        "deque": "cpp"
     }
 }
