@@ -26,5 +26,6 @@ void Timer::start(const std::string& timerName)
 
 void Timer::stop()
 {
-    std::cout << "Timer " << name << ": " << glfwGetTime() - startTime << " seconds" << std::endl;
+    double elapsedTime = (glfwGetTime() * 1000) - (startTime * 1000);
+    std::cout << "Timer " << name << ": " << std::fixed << std::setprecision(6) << elapsedTime << " ms" << std::endl;
 }

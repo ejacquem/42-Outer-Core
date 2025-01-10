@@ -50,12 +50,27 @@ Object* ObjectLoader::parse(const std::string &filePath)
     return a;
 }
 
+// parse the indice line in thread
+void ObjectLoader::parseIndice(std::istringstream& stream)
+{
+    int i, j, k;
+    if (stream >> i && stream.ignore(1000, ' ') && stream >> j)
+    {
+        while(stream.ignore(1000, ' ') && stream >> k)
+        {
+            indices_buffer.push_back({i - 1, j - 1, k - 1});
+            // std::cout << "Indice: " << i << ", " << j << ", " << k << std::endl;
+            j = k;
+        }
+    }
+}
+
 void ObjectLoader::parseLine(const std::string &line)
 {
     std::istringstream stream(line);
     std::string prefix;
     float x, y, z;
-    int i, j, k;
+    // int i, j, k;
 
     stream >> prefix;
     // example:
@@ -70,16 +85,9 @@ void ObjectLoader::parseLine(const std::string &line)
     // f 1/a/b 2// 3 4 5 turns into 1 2 3 | 1 3 4 | 1 4 5
     else if (prefix == "f")
     {
-        // std::cout << "line: " << line << "\n";
-        if (stream >> i && stream.ignore(1000, ' ') && stream >> j)
-        {
-            while(stream.ignore(1000, ' ') && stream >> k)
-            {
-                indices_buffer.push_back({i - 1, j - 1, k - 1});
-                // std::cout << "Indice: " << i << ", " << j << ", " << k << std::endl;
-                j = k;
-            }
-        }
+        // std::thread t(parseIndice, std::ref(stream), std::ref(indices_buffer));
+        // t.join();
+        parseIndice(stream);
     }
 }
 

@@ -12,6 +12,8 @@
 #include "ObjectLoader.hpp"
 #include "LineDrawer.hpp"
 #include "Time.hpp"
+#include "utils.hpp"
+
 #include <iostream>
 #include <cstring>
 #include <cmath>
@@ -37,54 +39,35 @@ using std::endl;
 using std::sin;
 using std::cos;
 
-// return the list of .obj file in the resources/ folder
-std::vector<std::string> get_sorted_obj_list()
+// Load an image from the given path and return the texture ID.
+int load_image(const char *path, int srcDataFormat, int option1)
 {
-    namespace fs = std::filesystem;
-    std::string directory = OBJ_PATH;
-    std::vector<std::string> obj_list;
-
-    try {
-        if (!fs::exists(directory) || !fs::is_directory(directory)) {
-            std::cerr << "Directory does not exist or is not a directory." << std::endl;
-            return obj_list;
-        }
-
-        for (const auto& entry : fs::directory_iterator(directory)) {
-            if (fs::is_regular_file(entry)) {
-                if (entry.path().extension() == ".obj")
-                {
-                    // std::cout << entry.path().filename() << std::endl;
-                    obj_list.push_back(entry.path().filename());
-                }
-            }
-        }
-        std::sort(obj_list.begin(), obj_list.end());
-    } catch (const std::exception& e) {
-        std::cerr << "Error: " << e.what() << std::endl;
-    }
-    return obj_list;
-}
-
-//return the position of the file in alphabetical order
-int get_obj_file_index(std::string& filename)
-{
-    std::vector<std::string> obj_list = get_sorted_obj_list();
-
-    for (size_t i = 0; i < obj_list.size(); i++)
+    unsigned int texture;
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+    // load and generate the texture
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, option1);	
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, option1);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    int width, height, nrChannels;
+    unsigned char *data = stbi_load(path, &width, &height, &nrChannels, 0);
+    if (data)
     {
-        if(obj_list[i] == filename)
-        {
-            return i;
-        }
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, srcDataFormat, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+        stbi_image_free(data);
     }
-    return 0;
+    else
+    {
+        std::cout << "Failed to load texture" << std::endl;
+    }
+    return texture;
 }
-
 
 void swap_object(int direction)
 {
-    std::vector<std::string> obj_list = get_sorted_obj_list();
+    std::vector<std::string> obj_list = get_sorted_file_list(OBJ_PATH, ".obj");
 
     int len = obj_list.size();
     
@@ -94,12 +77,6 @@ void swap_object(int direction)
     std::cout << "\nloading: " << obj_list[g_obj_index] << std::endl;
     delete g_obj;
     g_obj = g_objLoader.parse(OBJ_PATH + obj_list[g_obj_index]);
-}
-
-int print_err(string msg)
-{
-    cerr << msg << endl;
-    return -1;
 }
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height)
@@ -203,7 +180,6 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
     cameraFront = glm::normalize(direction);
     (void)window;
 }
-
 void scroll_callback(GLFWwindow* window, double horizontal, double vertcial)
 {
     g_camera_speed *= pow(1.5, vertcial);
@@ -224,14 +200,14 @@ GLFWwindow *createWindow()
     if (window == NULL)
     {
         glfwTerminate();
-        print_err("Failed to create GLFW window");
+        std::cerr << "Failed to create GLFW window" << std::endl;
         return NULL;
     }
     glfwMakeContextCurrent(window);
     
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
-        print_err("Failed to initialize GLAD");
+        std::cerr << "Failed to initialize GLAD" << std::endl;
         return NULL;
     }
 
@@ -242,31 +218,6 @@ GLFWwindow *createWindow()
     glfwSetScrollCallback(window, scroll_callback);
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     return window;
-}
-
-int load_image(const char *path, int srcDataFormat, int option1)
-{
-    unsigned int texture;
-    glGenTextures(1, &texture);
-    glBindTexture(GL_TEXTURE_2D, texture);
-    // load and generate the texture
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, option1);	
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, option1);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    int width, height, nrChannels;
-    unsigned char *data = stbi_load(path, &width, &height, &nrChannels, 0);
-    if (data)
-    {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, srcDataFormat, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-        stbi_image_free(data);
-    }
-    else
-    {
-        std::cout << "Failed to load texture" << std::endl;
-    }
-    return texture;
 }
 
 int main(int argc, char** argv)
@@ -298,8 +249,7 @@ int main(int argc, char** argv)
     // linedrawer.add_zgrid(5, 1);
 
     std::string filename = argc >= 2 ? argv[1] : "resources/teapot2.obj";
-    g_obj_index = get_obj_file_index(filename);
-
+    g_obj_index = get_file_index(filename, OBJ_PATH);
 
     g_obj = g_objLoader.parse(filename);
 
@@ -325,7 +275,7 @@ int main(int argc, char** argv)
         // move camera with input
         view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 
-        projection = glm::perspective(glm::radians(fov), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.01f, 100.0f);
+        projection = glm::perspective(glm::radians(fov), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.0001f, 100.0f);
 
         defaultshader.use();
         defaultshader.setMat4("model", model);

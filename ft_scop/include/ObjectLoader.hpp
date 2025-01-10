@@ -15,6 +15,7 @@ private:
     std::vector<Vertex> vertices_buffer;
     std::vector<Indice> indices_buffer;
     void parseLine(const std::string& line);
+    void parseIndice(std::istringstream& stream);
 
 public:
     Object* parse(const std::string& filePath);

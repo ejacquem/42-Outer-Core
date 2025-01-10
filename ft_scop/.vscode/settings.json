@@ -10,6 +10,10 @@
         "sstream": "cpp",
         "ostream": "cpp",
         "vector": "cpp",
-        "deque": "cpp"
-    }
+        "deque": "cpp",
+        "thread": "cpp",
+        "filesystem": "cpp",
+        "algorithm": "cpp"
+    },
+    "C_Cpp.intelliSenseCacheSize": 0,
 }
