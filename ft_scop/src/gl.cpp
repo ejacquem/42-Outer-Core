@@ -248,10 +248,11 @@ int main(int argc, char** argv)
     linedrawer.add_ygrid(5, 1);
     // linedrawer.add_zgrid(5, 1);
 
-    std::string filename = argc >= 2 ? argv[1] : "resources/teapot2.obj";
+    std::string filename = argc >= 2 ? argv[1] : "resources/teapot.obj";
     g_obj_index = get_file_index(filename, OBJ_PATH);
+    swap_object(0);
 
-    g_obj = g_objLoader.parse(filename);
+    // g_obj = g_objLoader.parse(filename);
 
     while (!glfwWindowShouldClose(window))
     {

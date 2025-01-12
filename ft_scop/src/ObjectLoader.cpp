@@ -35,10 +35,10 @@ Object* ObjectLoader::parse(const std::string &filePath)
 
     Timer timer;
     timer.start("object parsing");
-    std::string line;
-    while (std::getline(file, line))
+    char line_buffer[1024];
+    while (file.getline(line_buffer, sizeof(line_buffer)))
     {
-        this->parseLine(line);
+        this->parseLine(line_buffer);
     }
     std::cout << "number of vertices: " << vertices_buffer.size() << std::endl;
     std::cout << "number of indices: " << indices_buffer.size() << std::endl;
@@ -54,40 +54,65 @@ Object* ObjectLoader::parse(const std::string &filePath)
 void ObjectLoader::parseIndice(std::istringstream& stream)
 {
     int i, j, k;
+    Timer t1;
+    Timer t2;
+    Timer t3;
+
+    // t1.start("stream parsing");
     if (stream >> i && stream.ignore(1000, ' ') && stream >> j)
     {
+        // t1.stop();
+        // t3.start("stream parsing 2");
         while(stream.ignore(1000, ' ') && stream >> k)
         {
+            // t3.stop();
+            // t2.start("vector pushback");
             indices_buffer.push_back({i - 1, j - 1, k - 1});
+            // t2.stop();
             // std::cout << "Indice: " << i << ", " << j << ", " << k << std::endl;
             j = k;
         }
     }
 }
 
-void ObjectLoader::parseLine(const std::string &line)
+void ObjectLoader::parseIndice(const char *line)
 {
-    std::istringstream stream(line);
-    std::string prefix;
-    float x, y, z;
+    int i, j, k;
+    if((line = strchr(line, ' ')))
+        i = atoi(line);
+    if((line = strchr(line + 1, ' ')))
+        j = atoi(line);
+    while((line = strchr(line + 1, ' ')))
+    {
+        k = atoi(line);
+        indices_buffer.push_back({i - 1, j - 1, k - 1});
+        j = k;
+    }
+}
+
+void ObjectLoader::parseLine(const char *line)
+{
+    float x = 0, y = 0, z = 0;
     // int i, j, k;
 
-    stream >> prefix;
     // example:
     // v -0.500000 -0.500000 -0.500000
-    if (prefix == "v")
+    if (line[0] == 'v' && line[1] == ' ')
     {
-        if (!(stream >> x >> y >> z))
-            return;
+        char* ptr = (char *)line + 2;
+        x = strtof(ptr, &ptr);
+        y = strtof(ptr, &ptr);
+        z = strtof(ptr, &ptr);
         vertices_buffer.push_back({x, y, z});
         // std::cout << "Vertex: " << x << ", " << y << ", " << z << std::endl;
     }
     // f 1/a/b 2// 3 4 5 turns into 1 2 3 | 1 3 4 | 1 4 5
-    else if (prefix == "f")
+    else if (line[0] == 'f' && line[1] == ' ')
     {
         // std::thread t(parseIndice, std::ref(stream), std::ref(indices_buffer));
         // t.join();
-        parseIndice(stream);
+        // parseIndice(stream);
+        parseIndice(line);
     }
 }
 

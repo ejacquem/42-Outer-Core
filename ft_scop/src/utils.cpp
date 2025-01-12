@@ -1,6 +1,5 @@
 #include "utils.hpp"
 
-
 // @return A sorted list of object files in the directory with the given extension.
 std::vector<std::string> get_sorted_file_list(const std::string& directory, const std::string& extension)
 {
@@ -41,7 +40,7 @@ int get_file_index(const std::string& filename, const std::string& directory)
 
     for (size_t i = 0; i < obj_list.size(); i++)
     {
-        if(obj_list[i] == filename)
+        if(directory + obj_list[i] == filename)
         {
             return i;
         }

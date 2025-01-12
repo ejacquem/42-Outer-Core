@@ -13,7 +13,9 @@
         "deque": "cpp",
         "thread": "cpp",
         "filesystem": "cpp",
-        "algorithm": "cpp"
+        "algorithm": "cpp",
+        "cstring": "cpp",
+        "cstdlib": "cpp"
     },
     "C_Cpp.intelliSenseCacheSize": 0,
 }
