@@ -23,6 +23,7 @@
 
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600
+#define ASPECT_RATIO (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT
 #define OBJ_PATH "resources/"
 
 int g_obj_index = 0;
@@ -86,15 +87,9 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 
 float mixValue = 0;
 
-int left;
-int right;
-
 void processInput(GLFWwindow *window)
 {
     Camera* camera = static_cast<Camera*>(glfwGetWindowUserPointer(window));
-
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, true);
 
     if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
     {
@@ -121,26 +116,19 @@ void processInput(GLFWwindow *window)
         camera->processKeyboard(UP, Time::deltaTime);
     if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
         camera->processKeyboard(DOWN, Time::deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
-    {
-        if (left == 0)
-            swap_object(-1);
-        left = 1;
-    }
-    if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_RELEASE)
-    {
-        left = 0;
-    }
-    if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
-    {
-        if (right == 0)
-            swap_object(1);
-        right = 1;
-    }
-    if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_RELEASE)
-    {
-        right = 0;
-    }
+}
+
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode)
+{
+    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+        glfwSetWindowShouldClose(window, true);
+    
+    if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS)
+        swap_object(1);
+    if (key == GLFW_KEY_LEFT && action == GLFW_PRESS)
+        swap_object(-1);
+    (void)scancode;
+    (void)mode;
 }
 
 float lastX =  800.0f / 2.0;
@@ -161,7 +149,10 @@ void scroll_callback(GLFWwindow* window, double horizontal, double vertcial)
 {
     Camera* camera = static_cast<Camera*>(glfwGetWindowUserPointer(window));
 
-    camera->processMouseScroll(vertcial, SPEED_MODE);
+    if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
+        camera->processMouseScroll(vertcial, SPEED_MODE);
+    else
+        camera->processMouseScroll(vertcial, FOV_MODE);
     (void)horizontal;
 }
 
@@ -192,6 +183,7 @@ GLFWwindow *createWindow()
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     glfwSetCursorPosCallback(window, mouse_callback);
     glfwSetScrollCallback(window, scroll_callback);
+    glfwSetKeyCallback(window, key_callback);
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     return window;
 }
@@ -214,7 +206,6 @@ int main(int argc, char** argv)
     stbi_set_flip_vertically_on_load(true);
 
     unsigned int texture1 = load_image("assets/wall.jpg", GL_RGB, GL_CLAMP_TO_EDGE);
-
     unsigned int texture2 = load_image("assets/awesomeface.png", GL_RGBA, GL_REPEAT);
 
     //uncap frame rate to maximise fps
@@ -231,12 +222,10 @@ int main(int argc, char** argv)
     g_obj_index = get_file_index(filename, OBJ_PATH);
     swap_object(0);
 
-    // g_obj = g_objLoader.parse(filename);
-
     while (!glfwWindowShouldClose(window))
     {
-        time.update();
         processInput(window);
+        time.update();
         glClearColor(0.7f, 0.7f, 0.5f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -247,16 +236,9 @@ int main(int argc, char** argv)
 
         // create transformations
         glm::mat4 model         = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
-        glm::mat4 view          = glm::mat4(1.0f);
-        glm::mat4 projection    = glm::mat4(1.0f);
-        // model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-        // view  = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+        glm::mat4 view          = camera.GetViewMatrix();
+        glm::mat4 projection    = glm::perspective(glm::radians(camera.fov), ASPECT_RATIO, 0.0001f, 100.0f);
         
-        // move camera with input
-        view = camera.GetViewMatrix();
-
-        projection = glm::perspective(glm::radians(camera.fov), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.0001f, 100.0f);
-
         defaultshader.use();
         defaultshader.setMat4("model", model);
         defaultshader.setMat4("view", view);

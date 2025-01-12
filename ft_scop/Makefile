@@ -1,4 +1,4 @@
-NAME	= build/scop
+NAME	= build/main
 FLAGS	= -g -Wall -Wextra -std=c++17 -Wshadow -Wno-shadow
 GLAD	= external/glad/src/glad.c
 GLADO	= build/glad.o
@@ -8,7 +8,7 @@ INCLUDE	= -I./include -I./include/render -I./external
 
 GALLIUM = GALLIUM_HUD_PERIOD=0.05 GALLIUM_HUD=".dfps"
 
-SRC		= src/scop.cpp src/render/Shader.cpp src/Time.cpp\
+SRC		= src/main.cpp src/render/Shader.cpp src/Time.cpp\
 			src/LineDrawer.cpp\
 			src/Object.cpp\
 			src/ObjectLoader.cpp\

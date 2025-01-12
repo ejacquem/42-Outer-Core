@@ -25,8 +25,8 @@ enum Camera_Scroll_Mode {
 #define SPEED        5.0f
 #define SENSITIVITY  0.1f
 #define FOV          90.0f
-#define MIN_FOV      20.0f
-#define MAX_FOV      180.0f
+#define MIN_FOV      15.0f
+#define MAX_FOV      150.0f
 
 // An abstract camera class that processes input and calculates the corresponding Euler Angles, Vectors and Matrices for use in OpenGL
 class Camera
