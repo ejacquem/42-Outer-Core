@@ -1,5 +1,5 @@
-#ifndef SCOP_HPP
-#define SCOP_HPP
+#ifndef STRUCT_HPP
+#define STRUCT_HPP
 
 struct Vertex
 {

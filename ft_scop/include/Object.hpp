@@ -3,7 +3,7 @@
 
 #include <vector>
 #include "Shader.hpp"
-#include "scop.hpp"
+#include "struct.hpp"
 
 // template <typename T>
 class Object

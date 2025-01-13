@@ -3,7 +3,7 @@
 
 #include <vector>
 #include "Shader.hpp"
-#include "scop.hpp"
+#include "struct.hpp"
 
 #define GRID_COLOR 0xaaaaaa
 
@@ -22,14 +22,14 @@ private:
     //vector of lines
     std::vector<VertexColor> lines_vertex;
     int vertex_size;
-    Shader shader;
+    Shader *shader;
     GLuint vao, vbo;
     // VAO vao;
     // VBO vbo;
     void computeBuffer();
 
 public:
-    LineDrawer(Shader shader);
+    LineDrawer(Shader *shader);
     ~LineDrawer();
 
     //add a line to the list of lines
@@ -42,7 +42,7 @@ public:
     // void add_line(const Line3D line);
 
     //draw all the lines
-    void draw();
+    void draw(glm::mat4 view, glm::mat4 projection);
 
     //toggle the visibility of the lines
     void toggle();

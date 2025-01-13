@@ -116,12 +116,13 @@ public:
     void processKeyboard(Camera_Movement direction, float deltaTime)
     {
         float velocity = speed * deltaTime;
+        glm::vec3 front_no_y = glm::normalize(glm::vec3(front.x, 0, front.z));
         switch (direction)
         {
             case FORWARD:
-                position += front * velocity; break;
+                position += front_no_y * velocity; break;
             case BACKWARD:
-                position -= front * velocity; break;
+                position -= front_no_y * velocity; break;
             case RIGHT:
                 position += right * velocity; break;
             case LEFT:
@@ -166,7 +167,7 @@ public:
         }
         if (mode == FOV_MODE)
         {
-            fov -= (float)yoffset;
+            fov -= (float)(yoffset * 2);
             if (fov < MIN_FOV)
                 fov = MIN_FOV;
             if (fov > MAX_FOV)

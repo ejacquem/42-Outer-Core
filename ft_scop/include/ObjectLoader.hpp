@@ -6,7 +6,6 @@
 #include <cstring>
 #include <cstdlib>
 #include "Shader.hpp"
-#include "scop.hpp"
 #include "Object.hpp"
 #include "Time.hpp"
 

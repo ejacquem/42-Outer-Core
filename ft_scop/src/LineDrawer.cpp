@@ -1,6 +1,9 @@
 #include "LineDrawer.hpp"
 
-LineDrawer::LineDrawer(Shader shader) : shader(shader) {
+LineDrawer::LineDrawer(Shader *shader)
+{
+    this->shader = shader;
+
     glGenVertexArrays(1, &vao);
     glGenBuffers(1, &vbo);
 
@@ -60,11 +63,13 @@ void LineDrawer::add_depth_line(Point3D start, float len, int color)
 
 
 //draw all the lines
-void LineDrawer::draw()
+void LineDrawer::draw(glm::mat4 view, glm::mat4 projection)
 {
     if (vertex_size == 0) return;
 
-    shader.use();
+    shader->use();
+    shader->setMat4("view", view);
+    shader->setMat4("projection", projection);
 
     glBindVertexArray(vao);
     glDrawArrays(GL_LINES, 0, vertex_size);

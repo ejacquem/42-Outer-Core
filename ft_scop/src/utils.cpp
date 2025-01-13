@@ -47,3 +47,32 @@ int get_file_index(const std::string& filename, const std::string& directory)
     }
     return 0;
 }
+
+//this include is needed here for the stb library for some reason
+#include "stb_image.h" //load texture
+
+// Load an image from the given path and return the texture ID.
+int load_image(const char *path, int srcDataFormat, int option1)
+{
+    unsigned int texture;
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+    // load and generate the texture
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, option1);	
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, option1);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    int width, height, nrChannels;
+    unsigned char *data = stbi_load(path, &width, &height, &nrChannels, 0);
+    if (data)
+    {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, srcDataFormat, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+        stbi_image_free(data);
+    }
+    else
+    {
+        std::cout << "Failed to load texture" << std::endl;
+    }
+    return texture;
+}

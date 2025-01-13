@@ -15,7 +15,8 @@
         "filesystem": "cpp",
         "algorithm": "cpp",
         "cstring": "cpp",
-        "cstdlib": "cpp"
+        "cstdlib": "cpp",
+        "new": "cpp"
     },
     "C_Cpp.intelliSenseCacheSize": 0,
 }
