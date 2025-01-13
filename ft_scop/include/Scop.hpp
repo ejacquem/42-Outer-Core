@@ -22,7 +22,7 @@ public:
     {
         obj_index = get_file_index(filename, OBJ_PATH);
         object = nullptr;
-        this->swap(-1);
+        this->swap(0);
     };
     ~Scop()
     {
@@ -39,7 +39,7 @@ public:
         obj_index += direction;
         obj_index = (obj_index + len) % len;
 
-        std::cout << "\nloading: " << obj_list[obj_index] << std::endl;
+        std::cout << "\nloading: " << obj_list[obj_index] << ", index: " << obj_index << std::endl;
         if (object)
             delete object;
         object = objLoader.parse(OBJ_PATH + obj_list[obj_index]);

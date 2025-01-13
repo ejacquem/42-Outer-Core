@@ -71,14 +71,31 @@ GLFWwindow *createWindow()
     return window;
 }
 
+void print_welcome()
+{
+    std::cout << BRIGHT_YELLOW "\nWelcome to the Scop program!" RESET << std::endl;
+
+    std::vector<std::string> obj_list = get_sorted_file_list("resources/", ".obj");
+
+    std::cout << "Available objects:" << std::endl;
+    for (size_t i = 0; i < obj_list.size(); i++)
+    {
+        std::cout << i << ": " << obj_list[i] << std::endl;
+    }
+    std::cout << std::endl;
+}
+
 int main(int argc, char** argv)
 {
+    print_welcome();
+
     GLFWwindow *window = createWindow();
     Time time;
     Camera camera = Camera(glm::vec3(5,5,5), glm::vec2(-135,-45));
     std::string filename = (argc >= 2 ? argv[1] : "resources/teapot.obj");
     Scop scop(filename);
     InputManager inputManager = InputManager(window, &camera, &scop);
+
 
     Shader perspectiveshader = Shader("shaders/perspective.vert", "shaders/texture.frag");
     Shader lineshader = Shader("shaders/3d_line.vert", "shaders/3d_line.frag");
