@@ -8,7 +8,7 @@ INCLUDE	= -I./include -I./include/render -I./external
 
 GALLIUM = GALLIUM_HUD_PERIOD=0.05 GALLIUM_HUD=".dfps"
 
-SRC		= src/main.cpp src/render/Shader.cpp src/Time.cpp\
+SRC		= src/main.cpp src/render/Shader.cpp\
 			src/LineDrawer.cpp\
 			src/Object.cpp\
 			src/ObjectLoader.cpp\

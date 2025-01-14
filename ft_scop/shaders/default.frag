@@ -1,6 +1,8 @@
 #version 330 core
 
 in vec3 ourColor;
+in vec2 TexCoord;
+uniform sampler2D texture1;
 
 out vec4 FragColor;  // Output color
 
@@ -73,6 +75,7 @@ vec3 even_more_colors[24] = vec3[24](
 
 void main() {
     // Use the Primitive ID to alternate colors
-    int modid = gl_PrimitiveID % 24;
-    FragColor = vec4(even_more_colors[modid], 1.0);
+    // int modid = gl_PrimitiveID % 24;
+    // FragColor = vec4(even_more_colors[modid], 1.0);
+    FragColor = texture(texture1, TexCoord);
 }

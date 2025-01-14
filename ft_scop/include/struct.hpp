@@ -6,6 +6,13 @@ struct Vertex
     float x, y, z;
 };
 
+//vertex that store a texture
+struct Vertextex
+{
+    float x, y, z;
+    float u, v;
+};
+
 struct Indice
 {
     int x, y, z;

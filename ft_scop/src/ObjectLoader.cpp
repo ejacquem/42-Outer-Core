@@ -27,10 +27,12 @@ Object* ObjectLoader::parse(const std::string &filePath)
 {
     vertices_buffer.clear();
     indices_buffer.clear();
+    std::cout << "parsing: " << filePath << std::endl;
     std::ifstream file(filePath);
     if (!file.is_open())
     {
-        throw std::runtime_error("Unable to open file: " + filePath);
+        std::cout << "Unable to open file: " << filePath << std::endl;
+        return NULL;
     }
 
     Timer timer;
@@ -43,6 +45,16 @@ Object* ObjectLoader::parse(const std::string &filePath)
     std::cout << "number of vertices: " << vertices_buffer.size() << std::endl;
     std::cout << "number of indices: " << indices_buffer.size() << std::endl;
     timer.stop();
+
+    float radius = (maxy - miny) / 2;
+
+    for (auto &v : vertices_buffer)
+    {
+        // align object to center
+        v.y -= (maxy + miny) / 2;
+        v.u = 0.5 - atan2(v.z, v.x) / (2 * M_PI);
+        v.v = (0.5 + asin(v.y / radius) / M_PI);
+    }
 
     timer.start("creating object buffer");
     Object* a = new Object(vertices_buffer, indices_buffer);
@@ -92,7 +104,7 @@ void ObjectLoader::parseIndice(const char *line)
 
 void ObjectLoader::parseLine(const char *line)
 {
-    float x = 0, y = 0, z = 0;
+    float x = 0, y = 0, z = 0, u = 0, v = 0;
     // int i, j, k;
 
     // example:
@@ -103,8 +115,18 @@ void ObjectLoader::parseLine(const char *line)
         x = strtof(ptr, &ptr);
         y = strtof(ptr, &ptr);
         z = strtof(ptr, &ptr);
-        vertices_buffer.push_back({x, y, z});
-        // std::cout << "Vertex: " << x << ", " << y << ", " << z << std::endl;
+        u = 0.5 - atan2(z, x) / (2 * M_PI);
+        v = 0.5 + asin(y) / M_PI;
+        vertices_buffer.push_back({x, y, z, u, v});
+
+        maxy = std::max(maxy, y);
+        miny = std::min(miny, y);
+        // std::cout << "Vertex: "
+        //   << std::setw(9) << x << ", "
+        //   << std::setw(9) << y << ", "
+        //   << std::setw(9) << z << ", "
+        //   << std::setw(9) << u << ", "
+        //   << std::setw(9) << v << std::endl;
     }
     // f 1/a/b 2// 3 4 5 turns into 1 2 3 | 1 3 4 | 1 4 5
     else if (line[0] == 'f' && line[1] == ' ')

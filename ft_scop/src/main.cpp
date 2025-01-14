@@ -4,6 +4,7 @@
 #include "glfw-3.4/include/GLFW/glfw3.h" //window handling
 
 #include "glm/glm.hpp"
+#include <glm/glm.hpp>
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
 
@@ -92,9 +93,10 @@ int main(int argc, char** argv)
     GLFWwindow *window = createWindow();
     Time time;
     Camera camera = Camera(glm::vec3(5,5,5), glm::vec2(-135,-45));
-    std::string filename = (argc >= 2 ? argv[1] : "resources/teapot.obj");
-    Scop scop(filename);
+    std::string filename = (argc >= 2 ? argv[1] : "teapot.obj");
+    Scop scop;
     InputManager inputManager = InputManager(window, &camera, &scop);
+    scop.load(filename);
 
 
     Shader perspectiveshader = Shader("shaders/perspective.vert", "shaders/texture.frag");
@@ -105,8 +107,7 @@ int main(int argc, char** argv)
 
     stbi_set_flip_vertically_on_load(true);
 
-    unsigned int texture1 = load_image("assets/wall.jpg", GL_RGB, GL_CLAMP_TO_EDGE);
-    unsigned int texture2 = load_image("assets/awesomeface.png", GL_RGBA, GL_REPEAT);
+    unsigned int texture1 = load_image("assets/earth.jpg", GL_RGB, GL_REPEAT);
 
     //uncap frame rate to maximise fps
     glfwSwapInterval(0);
@@ -125,13 +126,11 @@ int main(int argc, char** argv)
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture1);
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, texture2);
 
         // create transformations
         glm::mat4 model         = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
         glm::mat4 view          = camera.GetViewMatrix();
-        glm::mat4 projection    = glm::perspective(glm::radians(camera.fov), ASPECT_RATIO, 0.0001f, 100.0f);
+        glm::mat4 projection    = glm::perspective(glm::radians(camera.fov), ASPECT_RATIO, 0.0001f, 10000.0f);
 
         scop.draw(model, view, projection);
 

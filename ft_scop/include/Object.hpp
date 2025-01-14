@@ -10,12 +10,12 @@ class Object
 {
 private:
     GLuint vao, vbo, ebo;
-    std::vector<Vertex> &vertices;
+    std::vector<Vertextex> &vertices;
     std::vector<Indice> &indices;
 
 public:
     void draw();
-    Object(std::vector<Vertex> &vertices, std::vector<Indice> &indices);
+    Object(std::vector<Vertextex> &vertices, std::vector<Indice> &indices);
     ~Object();
 };
 

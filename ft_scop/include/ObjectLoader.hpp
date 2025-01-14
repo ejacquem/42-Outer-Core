@@ -13,7 +13,9 @@
 class ObjectLoader
 {
 private:
-    std::vector<Vertex> vertices_buffer;
+    float maxy = -1000000.0f;
+    float miny = +1000000.0f;
+    std::vector<Vertextex> vertices_buffer;
     std::vector<Indice> indices_buffer;
     void parseLine(const std::string& line);
     void parseLine(const char *line);
