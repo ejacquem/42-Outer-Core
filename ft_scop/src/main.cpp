@@ -1,9 +1,8 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h" //load texture
-#include "glad/include/glad/glad.h" //load opengl function
-#include "glfw-3.4/include/GLFW/glfw3.h" //window handling
+#include <glad/glad.h> //load opengl function
+#include <GLFW/glfw3.h> //window handling
 
-#include "glm/glm.hpp"
 #include <glm/glm.hpp>
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
@@ -93,27 +92,25 @@ int main(int argc, char** argv)
     GLFWwindow *window = createWindow();
     Time time;
     Camera camera = Camera(glm::vec3(5,5,5), glm::vec2(-135,-45));
-    std::string filename = (argc >= 2 ? argv[1] : "teapot.obj");
+    LineDrawer linedrawer = LineDrawer();
     Scop scop;
-    InputManager inputManager = InputManager(window, &camera, &scop);
+    InputManager inputManager = InputManager(window, &camera, &scop, &linedrawer);
+
+    std::string filename = (argc >= 2 ? argv[1] : "teapot.obj");
     scop.load(filename);
 
-
-    Shader perspectiveshader = Shader("shaders/perspective.vert", "shaders/texture.frag");
-    Shader lineshader = Shader("shaders/3d_line.vert", "shaders/3d_line.frag");
     Shader defaultshader = Shader("shaders/default.vert", "shaders/default.frag");
 
     scop.setShader(&defaultshader);
 
     stbi_set_flip_vertically_on_load(true);
 
-    unsigned int texture1 = load_image("assets/earth.jpg", GL_RGB, GL_REPEAT);
+    unsigned int texture1 = load_image("assets/wall.jpg", GL_RGB, GL_REPEAT);
 
     //uncap frame rate to maximise fps
     glfwSwapInterval(0);
     glEnable(GL_DEPTH_TEST);
 
-    LineDrawer linedrawer = LineDrawer(&lineshader);
     linedrawer.add_axes();
     linedrawer.add_ygrid(5, 1);
 

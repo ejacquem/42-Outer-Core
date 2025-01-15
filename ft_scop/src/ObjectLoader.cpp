@@ -23,10 +23,19 @@ std::string readFile(const std::string &filePath)
     return contentStream.str();
 }
 
-Object* ObjectLoader::parse(const std::string &filePath)
+void ObjectLoader::reset()
 {
     vertices_buffer.clear();
     indices_buffer.clear();
+
+    maxy = -1000000.0f;
+    miny = +1000000.0f;
+}
+
+Object* ObjectLoader::parse(const std::string &filePath)
+{
+    reset();
+
     std::cout << "parsing: " << filePath << std::endl;
     std::ifstream file(filePath);
     if (!file.is_open())

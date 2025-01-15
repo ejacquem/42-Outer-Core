@@ -22,14 +22,15 @@ private:
     //vector of lines
     std::vector<VertexColor> lines_vertex;
     int vertex_size;
-    Shader *shader;
+    Shader shader;
     GLuint vao, vbo;
+    bool toggled = true;
     // VAO vao;
     // VBO vbo;
     void computeBuffer();
 
 public:
-    LineDrawer(Shader *shader);
+    LineDrawer();
     ~LineDrawer();
 
     //add a line to the list of lines
