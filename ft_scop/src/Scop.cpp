@@ -24,7 +24,7 @@ void Scop::swap(int direction)
     load(OBJ_PATH + obj_list[obj_index]);
 }
 
-void Scop::draw(glm::mat4 model, glm::mat4 view, glm::mat4 projection)
+void Scop::draw(const GLfloat *model, const GLfloat *view, const GLfloat *projection)
 {
     if(object == NULL)
         return;

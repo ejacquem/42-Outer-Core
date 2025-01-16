@@ -1,107 +1,7 @@
-// #include "../external/glm/glm.hpp"
-// #include "../external/glm/gtc/matrix_transform.hpp"
-// #include "../external/glm/gtc/type_ptr.hpp"
+// #include "Math.hpp"
+#include "../include/Math.hpp"
 #include <iostream>
-
-// #include "../include/Math.hpp"
-
-# define M_PI		3.14159265358979323846	/* pi */
-
-
-struct vec4
-{
-    float x, y, z, w;
-
-    vec4(float x, float y, float z, float w){
-        this->x = x;
-        this->y = y;
-        this->z = z;
-        this->w = w;
-    }
-
-    vec4(float a){
-        x = y = z = w = a;
-    }
-
-    vec4(){
-        *this = vec4(0);
-    }
-
-    vec4(const vec4& o) = default;
-
-    float operator[](int index) const{
-        return (&x)[index];
-    }
-    
-    float operator[](int index){
-        return (&x)[index];
-    }
-
-    vec4 operator+(const vec4& o) const{
-        std::cout << "add: " << x << " " << o.x << std::endl;
-        return {x + o.x, y + o.y, z + o.z, w + o.w};
-    }
-    vec4 operator-(const vec4& o) const{
-        return {x - o.x, y - o.y, z - o.z, w - o.w};
-    }
-    float dot(const vec4& o){
-        return x * o.x + y * o.y + z * o.z + w * o.w;
-    }
-    vec4 operator*(const vec4& o) const{
-        return {x * o.x, y * o.y, z * o.z, w * o.w};
-    }
-    vec4 operator/(const vec4& o) const{
-        return {x / o.x, y / o.y, z / o.z, w / o.w};
-    }
-    vec4 operator*(float o){
-        return {x * o, y * o, z * o, w * o};
-    }
-    vec4 operator/(float o){
-        return {x / o, y / o, z / o, w / o};
-    }
-    vec4 cross(const vec4& o) const{
-        return {y * o.z - z * o.y, z * o.x - x * o.z, x * o.y - y * o.x, 0};
-    }
-};
-
-struct mat4
-{
-    vec4 data[4] = {0};
-
-    mat4 (float f){
-        data[0] = vec4(f);
-        data[1] = vec4(f);
-        data[2] = vec4(f);
-        data[3] = vec4(f);
-    }
-
-    mat4() = default;
-    mat4(const mat4& o) = default;
-
-    mat4(const vec4& v0, const vec4& v1, const vec4& v2, const vec4& v3) {
-        std::cout << "mat constructor" << std::endl;
-        std::cout << v0.x << std::endl;
-        data[0] = v0;
-        data[1] = v1;
-        data[2] = v2;
-        data[3] = v3;
-    }
-
-    vec4 operator[](int index) const
-    {
-        return data[index];
-    }
-
-    vec4 &operator[](int index)
-    {
-        return data[index];
-    }
-
-    mat4 operator+(const mat4& o)
-    {
-        return {data[0] + o[0], data[1] + o[1], data[2] + o[2], data[3] + o[3]};
-    }
-};
+#include <cassert>
 
 float radians(float degree)
 {
@@ -113,34 +13,219 @@ float degrees(float radian)
     return radian * 180 / M_PI;
 }
 
-int main(int argc, char const *argv[])
+vec3 cross(const vec3& a, const vec3& b)
 {
-    // vec4 vec = {0, 1, 2, 3};
-
-    // std::cout << vec.x << std::endl;
-    // std::cout << vec[0] << std::endl;
-
-    mat4 mato;
-    mato[0] = vec4(1, 0, 0, 0);
-    mat4 mata;
-    mata[0] = vec4(1, 0, 0, 0);
-    mato = mato + mata;
-
-    std::cout << mato[0].x << std::endl;
-    mato[0] = vec4(1, 0, 0, 0);
-    std::cout << mato[0].x << std::endl;
-    vec4 v = vec4(1, 0, 0, 0);
-    std::cout << v.x << std::endl;
-    vec4 v2 = v;
-    std::cout << v2.x << std::endl;
-    vec4 v3 = v + v;
-    std::cout << v3.x << std::endl;
-    mat4 test;
-    test[0] = v;
-    std::cout << test[0].x << std::endl;
-    // glm::mat4 a = glm::mat4(1.0);
-
-    // std::cout << a[0] << std::endl;
-
-    return 0;
+    return {a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x};
 }
+
+vec3 normalize(const vec3& a)
+{
+    float len = a.length();
+    return {a.x / len, a.y / len, a.z / len};
+}
+
+// mat4 mat4tomat4(glm::mat4 mat)
+// {
+//     mat4 result;
+//     for (int i = 0; i < 4; i++)
+//     {
+//         for (int j = 0; j < 4; j++)
+//         {
+//             result[i][j] = mat[i][j];
+//         }
+//     }
+//     return result;
+// }
+
+/*
+rotation matrix:
+x1 y1 z1 0​
+x2 y2 z2 0​
+x3 y3 z3 0​
+0  0  0  1​
+*/
+
+/*
+translation matrix:
+1  0  0  x​
+0  1  0  y​
+0  0  1  z​
+0  0  0  1​
+*/
+
+//lookAt function, creates a Matrix that rotates the camera and translates it to the correct position
+mat4 lookAt(vec3 eye, vec3 center, vec3 up)
+{
+    vec3 X, Y, Z;
+
+    // get Z with camera direction
+    Z = normalize(eye - center);
+    // get X by crossing up and Z
+    X = normalize(cross(up, Z));
+    // get Y by crossing Z and X
+    Y = normalize(cross(Z, X));
+
+    mat4 mat;
+
+    mat[0] = vec4(X.x, Y.x, Z.x, 0);
+    mat[1] = vec4(X.y, Y.y, Z.y, 0);
+    mat[2] = vec4(X.z, Y.z, Z.z, 0);
+    mat[3] = vec4(-X.dot(eye), -Y.dot(eye), -Z.dot(eye),1);
+
+    // mat[0][0] = X.x;
+    // mat[1][0] = X.y;
+    // mat[2][0] = X.z;
+    // mat[3][0] = -X.dot(eye);
+
+    // mat[0][1] = Y.x;
+    // mat[1][1] = Y.y;
+    // mat[2][1] = Y.z;
+    // mat[3][1] = -Y.dot(eye);
+
+    // mat[0][2] = Z.x;
+    // mat[1][2] = Z.y;
+    // mat[2][2] = Z.z;
+    // mat[3][2] = -Z.dot(eye);
+
+    // mat[0][3] = 0;
+    // mat[1][3] = 0;
+    // mat[2][3] = 0;
+    // mat[3][3] = 1;
+
+    return mat;
+}
+
+/*
+f = cotangent ⁡ fovy / 2
+
+a =  f/aspect
+b =  (zFar + zNear) / (zNear - zFar)
+c = 2(zFar * zNear) / (zNear - zFar)
+
+perspective matrix
+a 0 0 0 
+0 f 0 0 
+0 0 b c 
+0 0 -1 0
+*/
+mat4 perspective(float fovy, float aspect, float near, float far)
+{
+    float f = 1 / tanf(fovy / 2);
+    float a = f / aspect;
+    float b =     (far + near) / (near - far);
+    float c = 2 * (far * near) / (near - far);
+    mat4 mat;
+    mat[0] = vec4(a, 0, 0, 0);
+    mat[1] = vec4(0, f, 0, 0);
+    mat[2] = vec4(0, 0, b,-1);
+    mat[3] = vec4(0, 0, c, 0);
+    return mat;
+    // return mat4tomat4(glm::perspective(fovy, aspect, near, far));
+}
+
+// int main()
+// {
+//     glm::mat4 mat(1.0f);
+//     // print mat4
+//     for (int i = 0; i < 4; i++)
+//     {
+//         for (int j = 0; j < 4; j++)
+//         {
+//             std::cout << mat[i][j] << " ";
+//         }
+//         std::cout << std::endl;
+//     }
+
+//     std::cout << std::endl;
+//     mat = glm::translate(mat, glm::vec3(1.0f, 2.0f, 3.0f));
+
+//     for (int i = 0; i < 4; i++)
+//     {
+//         for (int j = 0; j < 4; j++)
+//         {
+//             std::cout << mat[i][j] << " ";
+//         }
+//         std::cout << std::endl;
+//     }
+
+//     std::cout << std::endl;
+
+//     mat4 mat2(1.0f);
+//     std::cout << mat2 << std::endl;
+//     mat2.translate({1.0f, 2.0f, 3.0f});
+//     std::cout << mat2 << std::endl;
+// }
+
+// int main() {
+//     // Test vec4 constructors
+//     vec4 v1; // Default constructor
+//     assert(v1.x == 0 && v1.y == 0 && v1.z == 0 && v1.w == 0);
+
+//     vec4 v2(1); // Constructor with single float
+//     assert(v2.x == 1 && v2.y == 1 && v2.z == 1 && v2.w == 1);
+
+//     vec4 v3(1, 2, 3, 4); // Constructor with four floats
+//     assert(v3.x == 1 && v3.y == 2 && v3.z == 3 && v3.w == 4);
+
+//     vec4 v4(v3); // Copy constructor
+//     assert(v4.x == 1 && v4.y == 2 && v4.z == 3 && v4.w == 4);
+
+//     // Test vec4 operators
+//     vec4 v5 = v3 + v2;
+//     assert(v5.x == 2 && v5.y == 3 && v5.z == 4 && v5.w == 5);
+
+//     vec4 v6 = v3 - v2;
+//     assert(v6.x == 0 && v6.y == 1 && v6.z == 2 && v6.w == 3);
+
+//     vec4 v7 = v3 * v2;
+//     assert(v7.x == 1 && v7.y == 2 && v7.z == 3 && v7.w == 4);
+
+//     vec4 v8 = v3 / v2;
+//     assert(v8.x == 1 && v8.y == 2 && v8.z == 3 && v8.w == 4);
+
+//     vec4 v9 = v3 * 2.0f;
+//     assert(v9.x == 2 && v9.y == 4 && v9.z == 6 && v9.w == 8);
+
+//     vec4 v10 = v3 / 2.0f;
+//     assert(v10.x == 0.5 && v10.y == 1 && v10.z == 1.5 && v10.w == 2);
+
+//     assert(v3.dot(v2) == 10); // Dot product
+
+//     vec4 cross = v3.cross(v2); // Cross product
+//     assert(cross.x == -1 && cross.y == 2 && cross.z == -1 && cross.w == 0);
+
+//     // Test vec4 indexing
+//     assert(v3[0] == 1 && v3[1] == 2 && v3[2] == 3 && v3[3] == 4);
+
+//     // Test mat4 constructors
+//     mat4 m1; // Default constructor
+//     for (int i = 0; i < 4; i++) {
+//         assert(m1[i][0] == 0 && m1[i][1] == 0 && m1[i][2] == 0 && m1[i][3] == 0);
+//     }
+
+//     mat4 m2(1); // Constructor with single float
+//     for (int i = 0; i < 4; i++) {
+//         assert(m2[i][0] == 1 && m2[i][1] == 1 && m2[i][2] == 1 && m2[i][3] == 1);
+//     }
+
+//     mat4 m3(v1, v2, v3, v4); // Constructor with vec4s
+//     assert(m3[0].x == 0 && m3[1].x == 1 && m3[2].x == 1 && m3[3].x == 1);
+
+//     // Test mat4 addition and subtraction
+//     mat4 m4 = m3 + m2;
+//     assert(m4[1][0] == 2 && m4[2][0] == 2);
+
+//     mat4 m5 = m3 - m2;
+//     assert(m5[1][0] == 0 && m5[2][0] == 0);
+
+//     // Test mat4 multiplication
+//     mat4 m6 = m3 * m2;
+//     for (int i = 0; i < 4; i++) {
+//         for (int j = 0; j < 4; j++) {
+//             assert(m6[i][j] == m3[i][0] * m2[0][j] + m3[i][1] * m2[1][j] + m3[i][2] * m2[2][j] + m3[i][3] * m2[3][j]);
+//         }
+//     }
+
+//     std::cout << "All tests passed successfully!" << std::endl;
+//     return 0;
+// }

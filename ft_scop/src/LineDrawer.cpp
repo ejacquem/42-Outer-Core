@@ -62,7 +62,7 @@ void LineDrawer::add_depth_line(Point3D start, float len, int color)
 
 
 //draw all the lines
-void LineDrawer::draw(glm::mat4 view, glm::mat4 projection)
+void LineDrawer::draw(const GLfloat *view, const GLfloat *projection)
 {
     if (toggled == false) return;
     if (vertex_size == 0) return;

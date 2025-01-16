@@ -3,10 +3,6 @@
 #include <glad/glad.h> //load opengl function
 #include <GLFW/glfw3.h> //window handling
 
-#include <glm/glm.hpp>
-#include "glm/gtc/matrix_transform.hpp"
-#include "glm/gtc/type_ptr.hpp"
-
 #include "Shader.hpp"
 #include "Object.hpp"
 #include "ObjectLoader.hpp"
@@ -16,6 +12,7 @@
 #include "Camera.hpp"
 #include "InputManager.hpp"
 #include "Scop.hpp"
+#include "Math.hpp"
 
 #include <iostream>
 #include <cstring>
@@ -91,7 +88,7 @@ int main(int argc, char** argv)
 
     GLFWwindow *window = createWindow();
     Time time;
-    Camera camera = Camera(glm::vec3(5,5,5), glm::vec2(-135,-45));
+    Camera camera = Camera(vec3(5,5,5), vec2(-135,-45));
     LineDrawer linedrawer = LineDrawer();
     Scop scop;
     InputManager inputManager = InputManager(window, &camera, &scop, &linedrawer);
@@ -125,13 +122,13 @@ int main(int argc, char** argv)
         glBindTexture(GL_TEXTURE_2D, texture1);
 
         // create transformations
-        glm::mat4 model         = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
-        glm::mat4 view          = camera.GetViewMatrix();
-        glm::mat4 projection    = glm::perspective(glm::radians(camera.fov), ASPECT_RATIO, 0.0001f, 10000.0f);
+        mat4 model         = mat4(1.0f); // make sure to initialize matrix to identity matrix first
+        mat4 view          = camera.GetViewMatrix();
+        mat4 projection    = perspective(radians(camera.fov), ASPECT_RATIO, 0.0001f, 10000.0f);
 
-        scop.draw(model, view, projection);
+        scop.draw((const GLfloat *)&model, (const GLfloat *)&view, (const GLfloat *)&projection);
 
-        linedrawer.draw(view, projection);
+        linedrawer.draw((const GLfloat *)&view, (const GLfloat *)&projection);
 
         glfwSwapBuffers(window);
         glfwPollEvents();

@@ -22,7 +22,7 @@ public:
     ~Scop();
 
     void swap(int direction);
-    void draw(glm::mat4 model, glm::mat4 view, glm::mat4 projection);
+    void draw(const GLfloat *model, const GLfloat *view, const GLfloat *projection);
     void load(const std::string &filename);
     void setShader(Shader *shader);
 

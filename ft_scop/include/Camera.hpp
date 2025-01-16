@@ -1,8 +1,7 @@
 #ifndef CAMERA_HPP
 #define CAMERA_HPP
 
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
+#include "Math.hpp"
 
 enum Camera_Movement {
     FORWARD,
@@ -33,10 +32,10 @@ class Camera
 {
 public:
     // camera Attributes
-    glm::vec3 position;
-    glm::vec3 front;
-    glm::vec3 up;
-    glm::vec3 right;
+    vec3 position;
+    vec3 front;
+    vec3 up;
+    vec3 right;
     // euler Angles
     float pitch; // up/down
     float yaw;   // left/right
@@ -46,10 +45,10 @@ public:
     float fov;
     bool constrainPitch;
     
-    glm::vec3 worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
+    vec3 worldUp = vec3(0.0f, 1.0f, 0.0f);
 
     // constructor with vectors
-    Camera(glm::vec3 pos = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec2 direction = glm::vec2(YAW, PITCH))
+    Camera(vec3 pos = vec3(0.0f, 0.0f, 0.0f), vec2 direction = vec2(YAW, PITCH))
     {
         position = pos;
         yaw = direction.x;
@@ -62,7 +61,7 @@ public:
         updateCameraVectors();
     }
 
-    Camera& setDirection(glm::vec2 direction)
+    Camera& setDirection(vec2 direction)
     {
         pitch = direction.y;
         yaw = direction.x;
@@ -82,7 +81,7 @@ public:
         return *this;
     }
 
-    Camera& setPosition(glm::vec3 position)
+    Camera& setPosition(vec3 position)
     {
         this->position = position;
         return *this;
@@ -107,16 +106,16 @@ public:
     }
 
     // returns the view matrix calculated using Euler Angles and the LookAt Matrix
-    glm::mat4 GetViewMatrix()
+    mat4 GetViewMatrix()
     {
-        return glm::lookAt(position, position + front, up);
+        return lookAt(position, position + front, up);
     }
 
     // processes input received from any keyboard-like input system. Accepts input parameter in the form of camera defined ENUM (to abstract it from windowing systems)
     void processKeyboard(Camera_Movement direction, float deltaTime)
     {
         float velocity = speed * deltaTime;
-        glm::vec3 front_no_y = glm::normalize(glm::vec3(front.x, 0, front.z));
+        vec3 front_no_y = normalize(vec3(front.x, 0, front.z));
         switch (direction)
         {
             case FORWARD:
@@ -180,13 +179,13 @@ private:
     void updateCameraVectors()
     {
         // calculate the new front vector
-        front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-        front.y = sin(glm::radians(pitch));
-        front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-        front = glm::normalize(front);
+        front.x = cos(radians(yaw)) * cos(radians(pitch));
+        front.y = sin(radians(pitch));
+        front.z = sin(radians(yaw)) * cos(radians(pitch));
+        front = normalize(front);
         // also re-calculate the right and up vector
-        right = glm::normalize(glm::cross(front, worldUp)); // cross front with up to get right
-        up    = glm::normalize(glm::cross(right, front)); // cross right with front to get up
+        right = normalize(cross(front, worldUp)); // cross front with up to get right
+        up    = normalize(cross(right, front)); // cross right with front to get up
     }
 };
 #endif

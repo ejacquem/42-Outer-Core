@@ -43,7 +43,7 @@ public:
     // void add_line(const Line3D line);
 
     //draw all the lines
-    void draw(glm::mat4 view, glm::mat4 projection);
+    void draw(const GLfloat *view, const GLfloat *projection);
 
     //toggle the visibility of the lines
     void toggle();
