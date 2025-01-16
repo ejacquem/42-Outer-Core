@@ -52,7 +52,7 @@ int get_file_index(const std::string& filename, const std::string& directory)
 #include "stb_image.h" //load texture
 
 // Load an image from the given path and return the texture ID.
-int load_image(const char *path, int srcDataFormat, int option1)
+int load_image(const char *path, int option1)
 {
     unsigned int texture;
     glGenTextures(1, &texture);
@@ -66,13 +66,20 @@ int load_image(const char *path, int srcDataFormat, int option1)
     unsigned char *data = stbi_load(path, &width, &height, &nrChannels, 0);
     if (data)
     {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, srcDataFormat, GL_UNSIGNED_BYTE, data);
+        std::cout << "Loaded texture: " << path << " nbr channel: " << nrChannels << std::endl;
+        if (nrChannels == 3) {
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+        }
+        else if (nrChannels == 4) {
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+        }
         glGenerateMipmap(GL_TEXTURE_2D);
         stbi_image_free(data);
     }
     else
     {
-        std::cout << "Failed to load texture" << std::endl;
+        std::cout << "Failed to load texture: " << path << " nbr channel: " << nrChannels  << std::endl;
+        std::cout << "stbi error: " << stbi_failure_reason() << std::endl;
     }
     return texture;
 }

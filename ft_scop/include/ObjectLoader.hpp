@@ -13,8 +13,13 @@
 class ObjectLoader
 {
 private:
+    float maxx;
+    float minx;
     float maxy;
     float miny;
+    float maxz;
+    float minz;
+
     std::vector<Vertextex> vertices_buffer;
     std::vector<Indice> indices_buffer;
     void parseLine(const std::string& line);

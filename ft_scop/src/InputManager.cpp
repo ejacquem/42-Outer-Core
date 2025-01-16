@@ -9,7 +9,7 @@ InputManager::InputManager(GLFWwindow *window, Camera *camera, Scop *scop, LineD
     lastX =  800.0f / 2.0;
     lastY =  600.0 / 2.0;
     mixValue = 0;
-    std::cout << "InputManager Constructor" << std::endl;
+    // std::cout << "InputManager Constructor" << std::endl;
 
     glfwSetWindowUserPointer(window, this);
     this->set_callback_functions(window);
@@ -97,6 +97,8 @@ void InputManager::key_callback(GLFWwindow* window, int key, int scancode, int a
         scop->swap(-1);
     if (key == GLFW_KEY_F && action == GLFW_PRESS)
         lineDrawer->toggle();
+    if (key == GLFW_KEY_C && action == GLFW_PRESS)
+        camera->rotate = !camera->rotate;
     (void)scancode;
     (void)mode;
 }

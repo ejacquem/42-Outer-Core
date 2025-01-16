@@ -44,6 +44,9 @@ public:
     float sensitivity;
     float fov;
     bool constrainPitch;
+
+    // rotates around the world or not
+    bool rotate = true;
     
     vec3 worldUp = vec3(0.0f, 1.0f, 0.0f);
 
@@ -105,10 +108,28 @@ public:
         return *this;
     }
 
+    void lookAt(vec3 pos)
+    {
+        front = normalize(pos - position);
+        yaw = degrees(atan2(front.z, front.x));
+        pitch = degrees(asin(front.y));
+        updateCameraVectors();
+    }
+
+    // rotates around the center of the world
+    void rotateAroundCenter(float deltaTime)
+    {
+        if (rotate == false)
+            return;
+        lookAt(vec3(0.0f, 0.0f, 0.0f));
+        float velocity = speed * deltaTime;
+        position += right * velocity;
+    }
+
     // returns the view matrix calculated using Euler Angles and the LookAt Matrix
     mat4 GetViewMatrix()
     {
-        return lookAt(position, position + front, up);
+        return ::lookAt(position, position + front, up);
     }
 
     // processes input received from any keyboard-like input system. Accepts input parameter in the form of camera defined ENUM (to abstract it from windowing systems)

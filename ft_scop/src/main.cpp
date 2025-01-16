@@ -102,7 +102,8 @@ int main(int argc, char** argv)
 
     stbi_set_flip_vertically_on_load(true);
 
-    unsigned int texture1 = load_image("assets/wall.jpg", GL_RGB, GL_REPEAT);
+    // unsigned int texture1 = load_image("assets/earth.jpg", GL_REPEAT);
+    unsigned int texture1 = load_image("assets/goodman.jpg", GL_REPEAT);
 
     //uncap frame rate to maximise fps
     glfwSwapInterval(0);
@@ -115,6 +116,7 @@ int main(int argc, char** argv)
     {
         inputManager.processInput(window);
         time.update();
+        camera.rotateAroundCenter(Time::deltaTime);
         glClearColor(0.7f, 0.7f, 0.5f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 

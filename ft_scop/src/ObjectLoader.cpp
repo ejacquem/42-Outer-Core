@@ -28,8 +28,12 @@ void ObjectLoader::reset()
     vertices_buffer.clear();
     indices_buffer.clear();
 
+    maxx = -1000000.0f;
+    minx = +1000000.0f;
     maxy = -1000000.0f;
     miny = +1000000.0f;
+    maxz = -1000000.0f;
+    minz = +1000000.0f;
 }
 
 Object* ObjectLoader::parse(const std::string &filePath)
@@ -60,7 +64,10 @@ Object* ObjectLoader::parse(const std::string &filePath)
     for (auto &v : vertices_buffer)
     {
         // align object to center
+        v.x -= (maxx + minx) / 2;
         v.y -= (maxy + miny) / 2;
+        v.z -= (maxz + minz) / 2;
+
         v.u = 0.5 - atan2(v.z, v.x) / (2 * M_PI);
         v.v = (0.5 + asin(v.y / radius) / M_PI);
     }
@@ -124,12 +131,15 @@ void ObjectLoader::parseLine(const char *line)
         x = strtof(ptr, &ptr);
         y = strtof(ptr, &ptr);
         z = strtof(ptr, &ptr);
-        u = 0.5 - atan2(z, x) / (2 * M_PI);
-        v = 0.5 + asin(y) / M_PI;
-        vertices_buffer.push_back({x, y, z, u, v});
+        vertices_buffer.push_back({x, y, z, 0, 0});
 
+        maxx = std::max(maxx, x);
+        minx = std::min(minx, x);
         maxy = std::max(maxy, y);
         miny = std::min(miny, y);
+        maxz = std::max(maxz, z);
+        minz = std::min(minz, z);
+
         // std::cout << "Vertex: "
         //   << std::setw(9) << x << ", "
         //   << std::setw(9) << y << ", "
@@ -146,61 +156,3 @@ void ObjectLoader::parseLine(const char *line)
         parseIndice(line);
     }
 }
-
-// const char* map_file(const char* fname, size_t& length);
-
-// Object ObjectLoader::parseFast(const std::string &filePath)
-// {
-//     Timer timer;
-//     size_t length;
-//     timer.start("mapping file");
-//     auto f = map_file(filePath.c_str(), length);
-//     timer.stop();
-//     auto l = f + length;
-
-//     timer.start("object parsing");
-//     std::vector<std::string> lines;
-//     while (f && f != l)
-//     {
-//         const char* next = static_cast<const char*>(memchr(f, '\n', l - f));
-//         if (!next)
-//             next = l;  // Handle case where last line may not end with newline
-//         if(*f == 'v' || *f == 'f')
-//             this->parseLine(std::string(f, next));
-//         f = next + 1;
-//     }
-//     std::cout << "number of vertices: " << vertices_buffer.size() << std::endl;
-//     std::cout << "number of indices: " << indices_buffer.size() << std::endl;
-//     timer.stop();
-
-//     timer.start("creating object buffer");
-//     Object a = Object(vertices_buffer, indices_buffer);
-//     timer.stop();
-//     return a;
-// }
-
-// void handle_error(const char* msg) {
-//     perror(msg); 
-//     exit(255);
-// }
-
-// const char* map_file(const char* fname, size_t& length)
-// {
-//     int fd = open(fname, O_RDONLY);
-//     if (fd == -1)
-//         handle_error("open");
-
-//     // obtain file size
-//     struct stat sb;
-//     if (fstat(fd, &sb) == -1)
-//         handle_error("fstat");
-
-//     length = sb.st_size;
-
-//     const char* addr = static_cast<const char*>(mmap(NULL, length, PROT_READ, MAP_PRIVATE, fd, 0u));
-//     if (addr == MAP_FAILED)
-//         handle_error("mmap");
-
-//     // TODO close fd at some point in time, call munmap(...)
-//     return addr;
-// }
