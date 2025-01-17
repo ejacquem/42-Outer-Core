@@ -6,14 +6,6 @@
 #include <cmath>
 #include <iostream>
 
-// #include "../external/glm/glm.hpp"
-// #include "../external/glm/gtc/matrix_transform.hpp"
-// #include "../external/glm/gtc/type_ptr.hpp"
-
-// #include <glm/glm.hpp>
-// #include <glm/gtc/matrix_transform.hpp>
-// #include "glm/gtc/type_ptr.hpp"
-
 struct vec2
 {
     float x, y;
@@ -232,9 +224,9 @@ float degrees(float radian);
 vec3 cross(const vec3& a, const vec3& b);
 vec3 normalize(const vec3& a);
 
-// mat4 mat4tomat4(glm::mat4 mat);
 mat4 lookAt(vec3 eye, vec3 center, vec3 up);
 mat4 perspective(float fovy, float aspect, float near, float far);
+mat4 rotate_y(mat4 mat,double radians);
 
 
 #endif

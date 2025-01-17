@@ -62,11 +62,11 @@ int load_image(const char *path, int option1)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, option1);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    int width, height, nrChannels;
+    int width = 0, height = 0, nrChannels = 0;
     unsigned char *data = stbi_load(path, &width, &height, &nrChannels, 0);
     if (data)
     {
-        std::cout << "Loaded texture: " << path << " nbr channel: " << nrChannels << std::endl;
+        std::cout << "Loaded texture: " << path << std::endl;
         if (nrChannels == 3) {
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
         }
@@ -78,6 +78,11 @@ int load_image(const char *path, int option1)
     }
     else
     {
+        int b = 0x000000; // black
+        int m = 0xff00ff; // magenta
+        int default_img[4] = {b,m,m,b};
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 2, 2, 0, GL_RGBA, GL_UNSIGNED_BYTE, default_img);
+        glGenerateMipmap(GL_TEXTURE_2D);
         std::cout << "Failed to load texture: " << path << " nbr channel: " << nrChannels  << std::endl;
         std::cout << "stbi error: " << stbi_failure_reason() << std::endl;
     }

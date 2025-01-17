@@ -8,16 +8,19 @@
 #include "LineDrawer.hpp"
 #include "utils.hpp"
 
-#include "glm/glm.hpp"
-#include "glm/gtc/matrix_transform.hpp"
-#include "glm/gtc/type_ptr.hpp"
-
 #define OBJ_PATH "resources/"
 
 class Scop
 {
 
 public:
+    float color_mix_speed;
+    int color_palette_id;
+    float color_mix;
+    float rotation_speed; // deg / sec
+
+    inline float static const DEFAULT_SPEED = 1;
+
     Scop();
     ~Scop();
 
@@ -27,12 +30,11 @@ public:
     void setShader(Shader *shader);
 
 private:
-    Object *object;
     Shader *shader;
+    Object *object;
     ObjectLoader objLoader;
 
     int obj_index;
-
 };
 
 #endif

@@ -71,6 +71,18 @@ GLFWwindow *createWindow()
 void print_welcome()
 {
     std::cout << BRIGHT_YELLOW "\nWelcome to the Scop program!" RESET << std::endl;
+    std::cout << "|----- Controls -----" << std::endl;
+    std::cout << "|       wasd | camera movement" << std::endl;
+    std::cout << "|      mouse | camera direction" << std::endl;
+    std::cout << "|left, right | change 3D model" << std::endl;
+    std::cout << "|   up, down | change color palette" << std::endl;
+    std::cout << "|          f | show grid & axis" << std::endl;
+    std::cout << "|          c | camera orbit" << std::endl;
+    std::cout << "|          t | apply texture" << std::endl;
+    std::cout << "|          p | pause rotation" << std::endl;
+    std::cout << "|     scroll | change camera speed" << std::endl;
+    std::cout << "|ctrl+scroll | change fov" << std::endl;
+    std::cout << "|--------------------" << std::endl << std::endl;
 
     std::vector<std::string> obj_list = get_sorted_file_list("resources/", ".obj");
 
@@ -88,7 +100,7 @@ int main(int argc, char** argv)
 
     GLFWwindow *window = createWindow();
     Time time;
-    Camera camera = Camera(vec3(5,5,5), vec2(-135,-45));
+    Camera camera = Camera(vec3(3,2,3), vec2(-135,-30));
     LineDrawer linedrawer = LineDrawer();
     Scop scop;
     InputManager inputManager = InputManager(window, &camera, &scop, &linedrawer);
@@ -103,7 +115,7 @@ int main(int argc, char** argv)
     stbi_set_flip_vertically_on_load(true);
 
     // unsigned int texture1 = load_image("assets/earth.jpg", GL_REPEAT);
-    unsigned int texture1 = load_image("assets/test.png", GL_REPEAT);
+    unsigned int texture1 = load_image("assets/goodman.jpg", GL_REPEAT);
 
     //uncap frame rate to maximise fps
     glfwSwapInterval(0);
@@ -112,6 +124,7 @@ int main(int argc, char** argv)
     linedrawer.add_axes();
     linedrawer.add_ygrid(5, 1);
 
+    mat4 model = mat4(1.0f); // make sure to initialize matrix to identity matrix first
     while (!glfwWindowShouldClose(window))
     {
         inputManager.processInput(window);
@@ -124,7 +137,7 @@ int main(int argc, char** argv)
         glBindTexture(GL_TEXTURE_2D, texture1);
 
         // create transformations
-        mat4 model         = mat4(1.0f); // make sure to initialize matrix to identity matrix first
+        model = rotate_y(model, scop.rotation_speed * Time::deltaTime);
         mat4 view          = camera.GetViewMatrix();
         mat4 projection    = perspective(radians(camera.fov), ASPECT_RATIO, 0.0001f, 10000.0f);
 

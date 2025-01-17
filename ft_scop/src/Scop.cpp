@@ -3,6 +3,9 @@
 Scop::Scop()
 {
     obj_index = -1;
+    color_palette_id = 0;
+    color_mix_speed = -1;
+    rotation_speed = Scop::DEFAULT_SPEED;
     object = nullptr;
 }
 
@@ -33,6 +36,16 @@ void Scop::draw(const GLfloat *model, const GLfloat *view, const GLfloat *projec
     shader->setMat4("view", view);
     shader->setMat4("projection", projection);
 
+    shader->setInt("color_palette_id", color_palette_id);
+
+    color_mix += color_mix_speed * Time::deltaTime;
+    if(color_mix < 0)
+        color_mix = 0;
+    if(color_mix > 1)
+        color_mix = 1;
+
+    shader->setFloat("color_mix", color_mix);
+
     object->draw();
 }
 
@@ -53,3 +66,4 @@ void Scop::setShader(Shader *shader)
 {
     this->shader = shader;
 }
+

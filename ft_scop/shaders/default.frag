@@ -4,6 +4,9 @@ in vec3 ourColor;
 in vec2 TexCoord;
 uniform sampler2D texture1;
 
+uniform int color_palette_id;
+uniform float color_mix;
+
 float N22(vec2 p){
     vec3 a = fract(p.xyx*vec3(123.34,234.34,345.65));
     a += dot(a, a+34.45);
@@ -81,13 +84,25 @@ vec3 even_more_colors[24] = vec3[24](
 
 void main() {
     // Use the Primitive ID to alternate colors
-    int modid = gl_PrimitiveID % 24;
-    // FragColor = vec4(even_more_colors[modid], 1.0);
-    // float n = (gl_PrimitiveID%1000) / 3.1415;
-    // vec3 random_color = vec3(
-    //     N22(vec2(n, 1)),
-    //     N22(vec2(n, 2)),
-    //     N22(vec2(n, 3)));
-    // FragColor = vec4(random_color, 1.0);
-    FragColor = texture(texture1, TexCoord);
+
+    if (color_palette_id == 0)
+        FragColor = vec4(even_more_colors[gl_PrimitiveID % 24], 1.0);
+    else if (color_palette_id == 1)
+        FragColor = vec4(more_colors[gl_PrimitiveID % 12], 1.0);
+    else if (color_palette_id == 2)
+        FragColor = vec4(colors[gl_PrimitiveID % 6], 1.0);
+    else if (color_palette_id == 3)
+        FragColor = vec4(rgb[gl_PrimitiveID % 3], 1.0);
+    else if (color_palette_id == 4)
+        FragColor = vec4(gray_colors[gl_PrimitiveID % 7], 1.0);
+    else
+    {
+        float n = (gl_PrimitiveID%1000) / 3.1415;
+        vec3 random_color = vec3(
+            N22(vec2(n, 1)),
+            N22(vec2(n, 2)),
+            N22(vec2(n, 3)));
+        FragColor = vec4(random_color, 1.0);
+    }
+    FragColor = mix(texture(texture1, TexCoord), FragColor, color_mix);
 }

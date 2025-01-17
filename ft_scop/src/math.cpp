@@ -24,19 +24,6 @@ vec3 normalize(const vec3& a)
     return {a.x / len, a.y / len, a.z / len};
 }
 
-// mat4 mat4tomat4(glm::mat4 mat)
-// {
-//     mat4 result;
-//     for (int i = 0; i < 4; i++)
-//     {
-//         for (int j = 0; j < 4; j++)
-//         {
-//             result[i][j] = mat[i][j];
-//         }
-//     }
-//     return result;
-// }
-
 /*
 rotation matrix:
 x1 y1 z1 0​
@@ -72,26 +59,6 @@ mat4 lookAt(vec3 eye, vec3 center, vec3 up)
     mat[2] = vec4(X.z, Y.z, Z.z, 0);
     mat[3] = vec4(-X.dot(eye), -Y.dot(eye), -Z.dot(eye),1);
 
-    // mat[0][0] = X.x;
-    // mat[1][0] = X.y;
-    // mat[2][0] = X.z;
-    // mat[3][0] = -X.dot(eye);
-
-    // mat[0][1] = Y.x;
-    // mat[1][1] = Y.y;
-    // mat[2][1] = Y.z;
-    // mat[3][1] = -Y.dot(eye);
-
-    // mat[0][2] = Z.x;
-    // mat[1][2] = Z.y;
-    // mat[2][2] = Z.z;
-    // mat[3][2] = -Z.dot(eye);
-
-    // mat[0][3] = 0;
-    // mat[1][3] = 0;
-    // mat[2][3] = 0;
-    // mat[3][3] = 1;
-
     return mat;
 }
 
@@ -120,41 +87,30 @@ mat4 perspective(float fovy, float aspect, float near, float far)
     mat[2] = vec4(0, 0, b,-1);
     mat[3] = vec4(0, 0, c, 0);
     return mat;
-    // return mat4tomat4(glm::perspective(fovy, aspect, near, far));
 }
 
-// int main()
-// {
-//     glm::mat4 mat(1.0f);
-//     // print mat4
-//     for (int i = 0; i < 4; i++)
-//     {
-//         for (int j = 0; j < 4; j++)
-//         {
-//             std::cout << mat[i][j] << " ";
-//         }
-//         std::cout << std::endl;
-//     }
+/*
+rotation_y matrix
+ cos 0 sin 0 
+   0 1 0   0 
+-sin 0 cos 0 
+   0 0  -1 0
+*/
+//create a rotation matrix around the y axis
+mat4 rotate_y(mat4 mat, double radians)
+{
+    double cos_theta = cos(radians);
+    double sin_theta = sin(radians);
 
-//     std::cout << std::endl;
-//     mat = glm::translate(mat, glm::vec3(1.0f, 2.0f, 3.0f));
+    mat4 rotation = {
+        vec4(cos_theta, 0, -sin_theta, 0),
+        vec4(0, 1, 0, 0),
+        vec4(sin_theta, 0, cos_theta, 0),
+        vec4(0, 0, 0, 1)
+    };
 
-//     for (int i = 0; i < 4; i++)
-//     {
-//         for (int j = 0; j < 4; j++)
-//         {
-//             std::cout << mat[i][j] << " ";
-//         }
-//         std::cout << std::endl;
-//     }
-
-//     std::cout << std::endl;
-
-//     mat4 mat2(1.0f);
-//     std::cout << mat2 << std::endl;
-//     mat2.translate({1.0f, 2.0f, 3.0f});
-//     std::cout << mat2 << std::endl;
-// }
+    return mat * rotation;  // Apply rotation to the input matrix
+}
 
 // int main() {
 //     // Test vec4 constructors

@@ -99,6 +99,25 @@ void InputManager::key_callback(GLFWwindow* window, int key, int scancode, int a
         lineDrawer->toggle();
     if (key == GLFW_KEY_C && action == GLFW_PRESS)
         camera->rotate = !camera->rotate;
+    if (key == GLFW_KEY_UP && action == GLFW_PRESS)
+    {
+        if(scop->color_palette_id < 5)
+            scop->color_palette_id++;
+    }
+    if (key == GLFW_KEY_DOWN && action == GLFW_PRESS)
+    {
+        if(scop->color_palette_id > 0)
+            scop->color_palette_id--;
+    }
+    if (key == GLFW_KEY_T && action == GLFW_PRESS)
+        scop->color_mix_speed *= -1;
+    if (key == GLFW_KEY_P && action == GLFW_PRESS)
+    {
+        if(scop->rotation_speed == 0)
+            scop->rotation_speed = Scop::DEFAULT_SPEED;
+        else
+            scop->rotation_speed = 0;
+    }
     (void)scancode;
     (void)mode;
 }

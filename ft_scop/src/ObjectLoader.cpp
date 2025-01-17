@@ -40,7 +40,7 @@ Object* ObjectLoader::parse(const std::string &filePath)
 {
     reset();
 
-    std::cout << "parsing: " << filePath << std::endl;
+    // std::cout << "parsing: " << filePath << std::endl;
     std::ifstream file(filePath);
     if (!file.is_open())
     {
@@ -55,8 +55,7 @@ Object* ObjectLoader::parse(const std::string &filePath)
     {
         this->parseLine(line_buffer);
     }
-    std::cout << "number of vertices: " << vertices_buffer.size() << std::endl;
-    std::cout << "number of indices: " << indices_buffer.size() << std::endl;
+    std::cout << vertices_buffer.size() << " vertices, " <<  indices_buffer.size() << " indices" <<std::endl;
     timer.stop();
 
     float radius = (maxy - miny) / 2;
@@ -84,14 +83,12 @@ Object* ObjectLoader::parse(const std::string &filePath)
         {
             if(u1 > 0.5 || u2 > 0.5 || u3 > 0.5)
             {
-            std::cout << "applying correcrtion: u1: " << u1 << ", u2: " << u2 << ", u3: " << u3 <<std::endl;
+            // std::cout << "applying correcrtion: u1: " << u1 << ", u2: " << u2 << ", u3: " << u3 <<std::endl;
                 Vertextex new_vertex;
                 //indice: 1 5 9 -> 1 point to a vertex with u==0, so we duplicate that vertex x with u=1 and assign indice to: x 5 9
                 if(u1 <= 0.1)
                 {
                     new_vertex = vertices_buffer[i.x];
-                    if(new_vertex.u != 0)
-                        std::cout << "Error u !=0, u: " << new_vertex.u<<std::endl;
                     new_vertex.u += 1;
                     i.x = vertices_buffer.size();
                     vertices_buffer.push_back(new_vertex);
@@ -110,7 +107,7 @@ Object* ObjectLoader::parse(const std::string &filePath)
                     i.z = vertices_buffer.size();
                     vertices_buffer.push_back(new_vertex);
                 }
-            std::cout << "applied correcrtion: u1: " << vertices_buffer[i.x].u << ", u2: " << vertices_buffer[i.y].u << ", u3: " << vertices_buffer[i.z].u <<std::endl<<std::endl;
+            // std::cout << "applied correcrtion: u1: " << vertices_buffer[i.x].u << ", u2: " << vertices_buffer[i.y].u << ", u3: " << vertices_buffer[i.z].u <<std::endl<<std::endl;
             }
 
         }
@@ -164,7 +161,7 @@ void ObjectLoader::parseIndice(const char *line)
 
 void ObjectLoader::parseLine(const char *line)
 {
-    float x = 0, y = 0, z = 0, u = 0, v = 0;
+    float x = 0, y = 0, z = 0;
     // int i, j, k;
 
     // example:

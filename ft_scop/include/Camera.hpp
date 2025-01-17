@@ -46,7 +46,7 @@ public:
     bool constrainPitch;
 
     // rotates around the world or not
-    bool rotate = true;
+    bool rotate;
     
     vec3 worldUp = vec3(0.0f, 1.0f, 0.0f);
 
@@ -60,6 +60,8 @@ public:
         speed = SPEED;
         sensitivity = SENSITIVITY;
         constrainPitch = true;
+
+        rotate = false;
 
         updateCameraVectors();
     }
