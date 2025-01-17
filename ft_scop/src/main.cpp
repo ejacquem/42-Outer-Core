@@ -103,7 +103,7 @@ int main(int argc, char** argv)
     stbi_set_flip_vertically_on_load(true);
 
     // unsigned int texture1 = load_image("assets/earth.jpg", GL_REPEAT);
-    unsigned int texture1 = load_image("assets/goodman.jpg", GL_REPEAT);
+    unsigned int texture1 = load_image("assets/test.png", GL_REPEAT);
 
     //uncap frame rate to maximise fps
     glfwSwapInterval(0);

@@ -72,6 +72,50 @@ Object* ObjectLoader::parse(const std::string &filePath)
         v.v = (0.5 + asin(v.y / radius) / M_PI);
     }
 
+
+    //this part is to fix the seam issue
+    for (auto &i : indices_buffer)
+    {
+        float u1 = vertices_buffer[i.x].u;
+        float u2 = vertices_buffer[i.y].u;
+        float u3 = vertices_buffer[i.z].u;
+
+        if (u1 <= 0.1 || u2 <= 0.1 || u3 <= 0.1)
+        {
+            if(u1 > 0.5 || u2 > 0.5 || u3 > 0.5)
+            {
+            std::cout << "applying correcrtion: u1: " << u1 << ", u2: " << u2 << ", u3: " << u3 <<std::endl;
+                Vertextex new_vertex;
+                //indice: 1 5 9 -> 1 point to a vertex with u==0, so we duplicate that vertex x with u=1 and assign indice to: x 5 9
+                if(u1 <= 0.1)
+                {
+                    new_vertex = vertices_buffer[i.x];
+                    if(new_vertex.u != 0)
+                        std::cout << "Error u !=0, u: " << new_vertex.u<<std::endl;
+                    new_vertex.u += 1;
+                    i.x = vertices_buffer.size();
+                    vertices_buffer.push_back(new_vertex);
+                }
+                if(u2 <= 0.1)
+                {
+                    new_vertex = vertices_buffer[i.y];
+                    new_vertex.u += 1;
+                    i.y = vertices_buffer.size();
+                    vertices_buffer.push_back(new_vertex);
+                }
+                if(u3 <= 0.1)
+                {
+                    new_vertex = vertices_buffer[i.z];
+                    new_vertex.u += 1;
+                    i.z = vertices_buffer.size();
+                    vertices_buffer.push_back(new_vertex);
+                }
+            std::cout << "applied correcrtion: u1: " << vertices_buffer[i.x].u << ", u2: " << vertices_buffer[i.y].u << ", u3: " << vertices_buffer[i.z].u <<std::endl<<std::endl;
+            }
+
+        }
+    }
+
     timer.start("creating object buffer");
     Object* a = new Object(vertices_buffer, indices_buffer);
     timer.stop();
