@@ -48,15 +48,15 @@ Object* ObjectLoader::parse(const std::string &filePath)
         return NULL;
     }
 
-    Timer timer;
-    timer.start("object parsing");
+    // Timer timer;
+    // timer.start("object parsing");
     char line_buffer[1024];
     while (file.getline(line_buffer, sizeof(line_buffer)))
     {
         this->parseLine(line_buffer);
     }
     std::cout << vertices_buffer.size() << " vertices, " <<  indices_buffer.size() << " indices" <<std::endl;
-    timer.stop();
+    // timer.stop();
 
     float radius = (maxy - miny) / 2;
 
@@ -113,9 +113,9 @@ Object* ObjectLoader::parse(const std::string &filePath)
         }
     }
 
-    timer.start("creating object buffer");
+    // timer.start("creating object buffer");
     Object* a = new Object(vertices_buffer, indices_buffer);
-    timer.stop();
+    // timer.stop();
     return a;
 }
 

@@ -23,7 +23,10 @@ shader("shaders/3d_line.vert", "shaders/3d_line.frag")
     vertex_size = 0;
 }
 
-LineDrawer::~LineDrawer(){}
+LineDrawer::~LineDrawer()
+{
+    glDeleteBuffers(1, &vbo);
+}
 
 //add a line to the list of lines
 void LineDrawer::add_line(float x1, float y1, float z1, float x2, float y2, float z2, float r, float g, float b) {

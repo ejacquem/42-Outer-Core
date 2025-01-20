@@ -4,6 +4,7 @@ Scop::Scop()
 {
     obj_index = -1;
     color_palette_id = 0;
+    color_mix = 0;
     color_mix_speed = -1;
     rotation_speed = Scop::DEFAULT_SPEED;
     object = nullptr;

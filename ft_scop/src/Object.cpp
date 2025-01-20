@@ -1,6 +1,10 @@
 #include "Object.hpp"
 
-Object::~Object(){}
+Object::~Object()
+{
+    glDeleteBuffers(1, &vbo);
+    glDeleteBuffers(1, &ebo);
+}
 
 Object::Object(std::vector<Vertextex> &vertices, std::vector<Indice> &indices): 
 vertices(vertices), 

@@ -150,6 +150,7 @@ int main(int argc, char** argv)
     }
 
     std::cout << "Closing window\n";
+    glDeleteTextures(1, &texture1);
     glfwDestroyWindow(window);
     glfwTerminate();
 

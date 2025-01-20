@@ -109,7 +109,7 @@ mat4 rotate_y(mat4 mat, double radians)
         vec4(0, 0, 0, 1)
     };
 
-    return mat * rotation;  // Apply rotation to the input matrix
+    return mat * rotation;
 }
 
 // int main() {
