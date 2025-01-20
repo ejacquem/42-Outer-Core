@@ -32,7 +32,7 @@ run: all
 vrun: all
 	${GALLIUM} ${VALGRIND} ./${NAME} resources/${FILE}.obj
 
-${GLADO}: ${GLAD} $(BUILD)
+${GLADO}: ${GLAD} | $(BUILD)
 	gcc -Wall -Iexternal/glad/include -c ${GLAD} -o ${GLADO}
 
 ${NAME}: ${SRC} ${GLADO}
